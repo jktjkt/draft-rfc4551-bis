@@ -21,7 +21,7 @@
 <?rfc iprnotified="no" ?>
 <?rfc strict="yes" ?>
 
-<rfc category='std' ipr='trust200902' docName='draft-melnikov-rfc4551-bis-01.txt' obsoletes='4551' updates='3501'>
+<rfc category='std' ipr='trust200902' docName='draft-ietf-qresync-rfc4551bis-00.txt' obsoletes='4551' updates='3501'>
     <front>
         <title abbrev='IMAP CONDSTORE'>IMAP Extension for Conditional STORE Operation
             or Quick Flag Changes Resynchronization</title>
