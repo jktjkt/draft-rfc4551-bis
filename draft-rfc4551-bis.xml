@@ -21,7 +21,7 @@
 <?rfc iprnotified="no" ?>
 <?rfc strict="yes" ?>
 
-<rfc category='std' ipr='trust200902' docName='draft-ietf-qresync-rfc4551bis-01.txt' obsoletes='4551' updates='3501, 2683'>
+<rfc category='std' ipr='trust200902' docName='draft-ietf-qresync-rfc4551bis-02.txt' obsoletes='4551' updates='3501, 2683'>
     <front>
         <title abbrev='IMAP CONDSTORE'>IMAP Extension for Conditional STORE Operation
             or Quick Flag Changes Resynchronization</title>
@@ -813,7 +813,7 @@ Data:       zero or more numbers
    command and the server returns a non-empty SEARCH result, the server
    MUST also append (to the end of the untagged SEARCH response) the
    highest mod-sequence for all messages being returned.
-   See <xref target="untagged-search"/> for examples.</t>
+   See <xref target="SEARCH-MODSEQ"/> for examples.</t>
 </section>
 <section title='HIGHESTMODSEQ Status Data Items'>
 
