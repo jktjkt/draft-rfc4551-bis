@@ -10,7 +10,7 @@
         <!ENTITY rfc5257 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.5257.xml'>
         <!ENTITY rfc1305 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.1305.xml'>
         <!ENTITY rfc2180 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2180.xml'>
-
+        <!ENTITY rfc2683 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2683.xml'>
 ]>
 
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
@@ -21,7 +21,7 @@
 <?rfc iprnotified="no" ?>
 <?rfc strict="yes" ?>
 
-<rfc category='std' ipr='trust200902' docName='draft-ietf-qresync-rfc4551bis-01.txt' obsoletes='4551' updates='3501'>
+<rfc category='std' ipr='trust200902' docName='draft-ietf-qresync-rfc4551bis-01.txt' obsoletes='4551' updates='3501, 2683'>
     <front>
         <title abbrev='IMAP CONDSTORE'>IMAP Extension for Conditional STORE Operation
             or Quick Flag Changes Resynchronization</title>
@@ -1063,6 +1063,43 @@ S: * 101 FETCH (MODSEQ (303011130956)
    <t>See also <xref target="server-qos"/> for additional quality-of-implementation issues.</t>
 </section>
 
+
+<!--////Does this section belong to QRESYNC or here?-->
+
+<section title='Long Command Lines'>
+
+  <t>This document updates recommended line length limits specified in
+  Section 3.2.1.5 of <xref target="RFC2683"/>. While the advice in the first paragraph of
+  that section still applies ("use compact message/UID set representations"), the 1000 octet
+  limit suggested in the second paragraph turned out to be quite problematic when
+  the CONDSTORE extension is used.
+
+  <!--////Add more text about motivation for increasing the limit, such as replying
+    what is returned by the server back to it-->
+  The updated recommendation is as follows:
+  a client should limit the length of the command lines it generates to
+  approximately 8192 octets (including all quoted strings but not
+  including literals).
+  </t>
+
+<!--
+        <t>A client should limit the length of the command lines it generates to
+        approximately 1000 octets (including all quoted strings but not
+        including literals).  If the client is unable to group things into
+        ranges so that the command line is within that length, it should
+        split the request into multiple commands.  The client should use
+        literals instead of long quoted strings, in order to keep the command
+        length down.</t>
+
+        <t>For its part, a server should allow for a command line of at least
+        8000 octets.  This provides plenty of leeway for accepting reasonable
+        length commands from clients.  The server should send a BAD response
+        to a command that does not end within the server's maximum accepted
+        command length.</t>
+-->
+
+      </section>
+
 <section title='Security Considerations'>
 
    <t>It is believed that the Conditional STORE extension doesn't raise any
@@ -1115,6 +1152,7 @@ S: * 101 FETCH (MODSEQ (303011130956)
 
 <references title='Informative References'>
     &rfc2244;
+    &rfc2683; <!--IMAP Implementations Recommendations-->
     &rfc4314; <!--IMAP ACL-->
     &rfc5257; <!--IMAP ANNOTATE-->
     &rfc1305; <!--NTP-->
