@@ -3,6 +3,13 @@
 
         <!ENTITY rfc2119 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml'>
         <!ENTITY rfc2244 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2244.xml'>
+        <!ENTITY rfc5234 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.5234.xml'>
+        <!ENTITY rfc3501 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.3501.xml'>
+        <!ENTITY rfc4466 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.4466.xml'>
+        <!ENTITY rfc4314 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.4314.xml'>
+        <!ENTITY rfc5257 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.5257.xml'>
+        <!ENTITY rfc1305 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.1305.xml'>
+        <!ENTITY rfc2180 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2180.xml'>
 
 ]>
 
@@ -14,7 +21,7 @@
 <?rfc iprnotified="no" ?>
 <?rfc strict="yes" ?>
 
-<rfc category='std' ipr='trust200902' docName='draft-rfc4551-bis' obsoletes='4551' updates='3501'>
+<rfc category='std' ipr='trust200902' docName='draft-melnikov-rfc4551-bis' obsoletes='4551' updates='3501'>
     <front>
         <title abbrev='IMAP CONDSTORE'>IMAP Extension for Conditional STORE Operation
             or Quick Flag Changes Resynchronization</title>
@@ -63,7 +70,7 @@
                 operation MUST be greater than the mod-sequence of the first
                 completed.  Note that the latter rule disallows the use of the system
                 clock as a mod-sequence, because if system time changes (e.g., an NTP
-                [NTP] client adjusting the time), the next generated value might be
+                <xref target="RFC1305"/> client adjusting the time), the next generated value might be
                 less than the previous one.
 
 
@@ -159,14 +166,14 @@
         <section title='Conventions Used in This Document'>
             <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
             "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
-            document are to be interpreted as described in RFC 2119 [KEYWORDS].</t>
+            document are to be interpreted as described in RFC 2119 <xref target="RFC2119"/>.</t>
 
             <t>In examples, lines beginning with "S:" are sent by the IMAP server,
             and lines beginning with "C:" are sent by the client.  Line breaks
             may appear in example commands solely for editorial clarity; when
             present in the actual message, they are represented by "CRLF".</t>
 
-            <t>Formal syntax is defined using ABNF [ABNF].</t>
+            <t>Formal syntax is defined using ABNF <xref target="RFC5234"/>.</t>
 
             <t>The term "metadata" or "metadata item" is used throughout this
             document.  It refers to any system or user-defined keyword.  Future
@@ -175,7 +182,7 @@
 
             <t>Some IMAP mailboxes are private, accessible only to the owning user.
             Other mailboxes are not, either because the owner has set an Access
-            Control List [ACL] that permits access by other users, or because it
+            Control List <xref target="RFC4314"/> that permits access by other users, or because it
             is a shared mailbox.  Let's call a metadata item "shared" for the
             mailbox if any changes to the metadata items are persistent and
             visible to all other users accessing the mailbox.  Otherwise, the
@@ -279,7 +286,7 @@ S: A142 OK [READ-WRITE] SELECT completed
         <section title='STORE and UID STORE Commands'>
 
    <t>This document defines the following STORE modifier (see Section 2.5
-   of [IMAPABNF]):
+   of <xref target="RFC4466"/>):
 
        <list style='hanging'>
         <t hangText='UNCHANGEDSINCE &lt;mod-sequence>'>
@@ -358,7 +365,7 @@ S: d105 OK [MODIFIED 7,9] Conditional STORE failed</artwork>
    <figure title='Example 7'>
 
       <preamble>Same as above, but the server follows the SHOULD recommendation in
-      Section 6.4.6 of [IMAP4].</preamble>
+      Section 6.4.6 of <xref target="RFC3501"/>.</preamble>
 
 <artwork>
 C: d105 STORE 7,5,9 (UNCHANGEDSINCE 320162338)
@@ -500,7 +507,7 @@ S: a106 OK Conditional STORE completed
 <figure title='Example 11'>
 
       <preamble>The following example is based on the example from the Section
-      4.2.3 of [RFC-2180] and demonstrates that the MODIFIED response
+      4.2.3 of <xref target="RFC2180"/> and demonstrates that the MODIFIED response
       code may be also returned in the tagged NO response.</preamble>
 <artwork>
 Client tries to conditionally STORE flags on a mixture of expunged
@@ -568,7 +575,7 @@ S: b003 OK Conditional Store completed
 <section title='CHANGEDSINCE FETCH Modifier'>
 
    <t>This document defines the following FETCH modifier (see Section 2.4
-   of [IMAPABNF]):
+   of <xref target="RFC4466"/>):
 
    <list style='hanging'><t hangText='CHANGEDSINCE &lt;mod-sequence>'>
 
@@ -729,9 +736,9 @@ Both changes are reported in the session 2...
       server should use them to narrow down the search.</t>
 
       <t>For a flag &lt;flagname>, the corresponding &lt;entry-name> has a form
-      "/flags/&lt;flagname>" as defined in [IMAPABNF].  Note that the
+      "/flags/&lt;flagname>" as defined in <xref target="RFC4466"/>.  Note that the
       leading "\" character that denotes a system flag has to be escaped
-      as per Section 4.3 of [IMAP4], as the &lt;entry-name> uses syntax for
+      as per Section 4.3 of <xref target="RFC3501"/>, as the &lt;entry-name> uses syntax for
       quoted strings.</t>
    </list></t>
 
@@ -851,9 +858,9 @@ S: A142 OK [READ-WRITE] SELECT completed, CONDSTORE is now enabled
 <section title='Formal Syntax'>
 
    <t>The following syntax specification uses the Augmented Backus-Naur
-   Form (ABNF) [ABNF] notation.  Elements not defined here can be found
-   in the formal syntax of the ABNF [ABNF], IMAP [IMAP4], and IMAP ABNF
-   extensions [IMAPABNF] specifications.</t>
+   Form (ABNF) <xref target="RFC5234"/> notation.  Elements not defined here can be found
+   in the formal syntax of the ABNF <xref target="RFC5234"/>, IMAP <xref target="RFC3501"/>, and IMAP ABNF
+   extensions <xref target="RFC4466"/> specifications.</t>
 
    <t>Except as noted otherwise, all alphabetic characters are case-
    insensitive.  The use of upper- or lowercase characters to define
@@ -867,7 +874,7 @@ S: A142 OK [READ-WRITE] SELECT completed, CONDSTORE is now enabled
                           ;; extends non-terminal defined in RFC 3501.
 
    status-att-val      =/ "HIGHESTMODSEQ" SP mod-sequence-valzer
-                          ;; extends non-terminal defined in [IMAPABNF].
+                          ;; extends non-terminal defined in [RFC4466].
                           ;; Value 0 denotes that the mailbox doesn't
                           ;; support persistent mod-sequences
                           ;; as described in Section 3.1.2
@@ -878,7 +885,7 @@ S: A142 OK [READ-WRITE] SELECT completed, CONDSTORE is now enabled
 
    fetch-modifier      =/ chgsince-fetch-mod
                           ;; conforms to the generic "fetch-modifier"
-                          ;; syntax defined in [IMAPABNF].
+                          ;; syntax defined in [RFC4466].
 
    chgsince-fetch-mod  = "CHANGEDSINCE" SP mod-sequence-value
                           ;; CHANGEDSINCE FETCH modifier conforms to
@@ -917,7 +924,7 @@ S: A142 OK [READ-WRITE] SELECT completed, CONDSTORE is now enabled
                           ;;
                           ;; <entry-flag-name> follows the escape rules
                           ;; used by "quoted" string as described in
-                          ;; Section 4.3 of [IMAP4], e.g., for the flag
+                          ;; Section 4.3 of [RFC3501], e.g., for the flag
                           ;; \Seen the corresponding <entry-name> is
                           ;; "/flags/\\seen", and for the flag
                           ;; $MDNSent, the corresponding <entry-name>
@@ -944,7 +951,7 @@ S: A142 OK [READ-WRITE] SELECT completed, CONDSTORE is now enabled
 
    select-param        =/ condstore-param
                           ;; conforms to the generic "select-param"
-                          ;; non-terminal syntax defined in [IMAPABNF].
+                          ;; non-terminal syntax defined in [RFC4466].
 
    condstore-param     = "CONDSTORE"
 
@@ -962,7 +969,7 @@ S: A142 OK [READ-WRITE] SELECT completed, CONDSTORE is now enabled
                           ;; implementations MUST NOT generate
                           ;; flag-extension flags except as defined by
                           ;; future standard or standards-track
-                          ;; revisions of [IMAP4].
+                          ;; revisions of [RFC3501].
 
    attr-flag-keyword   = atom]]></artwork></figure>
 </section>
@@ -1026,7 +1033,7 @@ S: * 101 FETCH (MODSEQ (303011130956)
 <section title='Security Considerations'>
 
    <t>It is believed that the Conditional STORE extension doesn't raise any
-   new security concerns that are not already discussed in [IMAP4].
+   new security concerns that are not already discussed in <xref target="RFC3501"/>.
    However, the availability of this extension may make it possible for
    IMAP4 to be used in critical applications it could not be used for
    previously, making correct IMAP server implementation and operation
@@ -1046,9 +1053,9 @@ S: * 101 FETCH (MODSEQ (303011130956)
 </section>
 <section title='Acknowledgements'>
 
-        <t>Some text was borrowed from "IMAP ANNOTATE Extension" [ANN] by
+        <t>Some text was borrowed from "IMAP ANNOTATE Extension" <xref target="RFC5257"/> by
         Randall Gellens and Cyrus Daboo and from "ACAP -- Application
-        Configuration Access Protocol" [ACAP] by Chris Newman and John Myers.</t>
+        Configuration Access Protocol" <xref target="RFC2244"/> by Chris Newman and John Myers.</t>
 
         <t>Many thanks to Randall Gellens for his thorough review of the
         document.</t>
@@ -1063,40 +1070,19 @@ S: * 101 FETCH (MODSEQ (303011130956)
 <back>
 
 <references title='Normative References'>
-    &rfc2119;
-<!--
-   [KEYWORDS] Bradner, S., "Key words for use in RFCs to Indicate
-              Requirement Levels", BCP 14, RFC 2119, March 1997.
+    &rfc2119; <!--Keywords-->
+    &rfc5234; <!--ABNF-->
+    &rfc3501; <!--IMAP4rev1-->
+    &rfc4466; <!--IMAP ABNF-->
+</references>
 
-   [ABNF]     Crocker, D. and P. Overell, "Augmented BNF for Syntax
-              Specifications: ABNF", RFC 4234, October 2005.
-
-   [IMAP4]    Crispin, M., "INTERNET MESSAGE ACCESS PROTOCOL - VERSION
-              4rev1", RFC 3501, March 2003.
-
-   [IMAPABNF] Melnikov, A. and C. Daboo, "Collected Extensions to IMAP4
-              ABNF", RFC 4466, April 2006.
--->
-    </references>
 <references title='Informative References'>
     &rfc2244;
-<!--
-   [ACAP]     Newman, C. and J. Myers, "ACAP -- Application
-              Configuration Access Protocol", RFC 2244, November 1997.
+    &rfc4314; <!--IMAP ACL-->
+    &rfc5257; <!--IMAP ANNOTATE-->
+    &rfc1305; <!--NTP-->
+    &rfc2180; <!--IMAP4 Multi-Accessed Mailbox Practice-->
+</references>
 
-   [ACL]      Melnikov, A., "IMAP4 Access Control List (ACL) Extension",
-              RFC 4314, December 2005.
-
-   [ANN]      Daboo, C. and R. Gellens, "IMAP ANNOTATE Extension", Work
-              in Progress, March 2006.
-
-   [NTP]      Mills, D., "Network Time Protocol (Version 3)
-              Specification, Implementation and Analysis", RFC 1305,
-              March 1992.
-
-   [RFC-2180] Gahrns, M., "IMAP4 Multi-Accessed Mailbox Practice", RFC
-              2180, July 1997.
--->
-    </references>
 </back>
     </rfc>
