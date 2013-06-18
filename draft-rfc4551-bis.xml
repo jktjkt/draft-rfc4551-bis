@@ -21,13 +21,24 @@
 <?rfc iprnotified="no" ?>
 <?rfc strict="yes" ?>
 
-<rfc category='std' ipr='trust200902' docName='draft-melnikov-rfc4551-bis' obsoletes='4551' updates='3501'>
+<rfc category='std' ipr='trust200902' docName='draft-melnikov-rfc4551-bis-01.txt' obsoletes='4551' updates='3501'>
     <front>
         <title abbrev='IMAP CONDSTORE'>IMAP Extension for Conditional STORE Operation
             or Quick Flag Changes Resynchronization</title>
         <author initials='A' surname="Melnikov" fullname='Alexey Melnikov'>
             <organization>Isode Ltd.</organization>
-        </author>
+            <address>
+              <postal>
+                <street>5 Castle Business Village</street>
+                <street>36 Station Road</street>
+                <city>Hampton</city>
+                <region>Middlesex</region>
+                <code>TW12 2BX</code>
+                <country>UK</country>
+              </postal>
+              <email>Alexey.Melnikov@isode.com</email>
+            </address>
+          </author>
         <date/>
         <abstract>
             <t>Often, multiple IMAP (RFC 3501) clients need to coordinate changes to
@@ -1053,6 +1064,10 @@ S: * 101 FETCH (MODSEQ (303011130956)
 </section>
 <section title='Acknowledgements'>
 
+        <t>Thank you to Steve Hole for co-editing RFC 4551.</t>
+
+        <t>Thank you to Dave Cridland for helping to convert the original text RFC to xml2rfc format.</t>
+
         <t>Some text was borrowed from "IMAP ANNOTATE Extension" <xref target="RFC5257"/> by
         Randall Gellens and Cyrus Daboo and from "ACAP -- Application
         Configuration Access Protocol" <xref target="RFC2244"/> by Chris Newman and John Myers.</t>
@@ -1083,6 +1098,14 @@ S: * 101 FETCH (MODSEQ (303011130956)
     &rfc1305; <!--NTP-->
     &rfc2180; <!--IMAP4 Multi-Accessed Mailbox Practice-->
 </references>
+
+<section title='Changes since RFC 4551'>
+
+  <t>Fixed errata 3401, 3506 and 3509.</t>
+
+  <t>Updated references.</t>
+
+</section>
 
 </back>
     </rfc>
