@@ -21,7 +21,7 @@
 <?rfc iprnotified="no" ?>
 <?rfc strict="yes" ?>
 
-<rfc category='std' ipr='trust200902' docName='draft-ietf-qresync-rfc4551bis-00.txt' obsoletes='4551' updates='3501'>
+<rfc category='std' ipr='trust200902' docName='draft-ietf-qresync-rfc4551bis-01.txt' obsoletes='4551' updates='3501'>
     <front>
         <title abbrev='IMAP CONDSTORE'>IMAP Extension for Conditional STORE Operation
             or Quick Flag Changes Resynchronization</title>
@@ -62,7 +62,7 @@
         </abstract>
     </front>
     <middle>
-        <section title='Introduction and Overview'>
+        <section title='Introduction and Overview' anchor="intro">
             <t>
                 The Conditional STORE extension is present in any IMAP4
                 implementation that returns "CONDSTORE" as one of the supported
@@ -111,7 +111,7 @@
             </t>
             <t>
                 The server that supports this extension is not required to be able to
-                store mod-sequences for every available mailbox.  Section 3.1.2
+                store mod-sequences for every available mailbox.  <xref target="nomodseq"/>
                 describes how the server may act if a particular mailbox doesn't
                 support the persistent storage of mod-sequences.
             </t>
@@ -167,8 +167,8 @@
             any of the commands listed above.  A future extension to this
             document may extend the list of CONDSTORE enabling commands.  A first
             CONDSTORE enabling command executed in the session MUST cause the
-            server to return HIGHESTMODSEQ (Section 3.1.1) unless the server has
-            sent NOMODSEQ (Section 3.1.2) response code when the currently
+            server to return HIGHESTMODSEQ (<xref target="highestmodseq"/>) unless the server has
+            sent NOMODSEQ (<xref target="nomodseq"/>) response code when the currently
             selected mailbox was selected.</t>
 
             <t>The rest of this document describes the protocol changes more
@@ -202,11 +202,13 @@
             user.  Also note that different mailboxes may have different metadata
             items as shared.</t>
 
-            <t>See Section 1 for the definition of a "CONDSTORE-aware client" and a
+            <t>See <xref target="intro"/> for the definition of a "CONDSTORE-aware client" and a
             "CONDSTORE enabling command".</t>
 
         </section>
+
         <section title='IMAP Protocol Changes'>
+
             <section title='New OK Untagged Responses for SELECT and EXAMINE'>
 
                 <t>This document adds two new response codes, HIGHESTMODSEQ and
@@ -220,7 +222,7 @@
                 HIGHESTMODSEQ response code.  If the persistent storage for the
                 mailbox is not supported, the server MUST send the OK untagged
                 response including NOMODSEQ response code instead.</t>
-                <section title='HIGHESTMODSEQ Response Code'>
+                <section title='HIGHESTMODSEQ Response Code' anchor="highestmodseq">
                     <t>This document adds a new response code that is returned in the OK
                     untagged response for the SELECT and EXAMINE commands.  A server
                     supporting the persistent storage of mod-sequences for the mailbox
@@ -242,9 +244,9 @@
                     less than the value returned by the server, then some metadata items
                     on the server have changed since the last synchronization, and the
                     client needs to update its cache.  The client MAY use SEARCH MODSEQ
-                    (Section 3.4) to find out exactly which metadata items have changed.
+                    (<xref target="SEARCH-MODSEQ"/>) to find out exactly which metadata items have changed.
                     Alternatively, the client MAY issue FETCH with the CHANGEDSINCE
-                    modifier (Section 3.3.1) in order to fetch data for all messages that
+                    modifier (<xref target="FETCH-CHANGEDSINCE"/>) in order to fetch data for all messages that
                     have metadata items changed since some known modification sequence.
                     </t>
                     <figure title='Example 1'>
@@ -261,7 +263,7 @@ S: * OK [HIGHESTMODSEQ 715194045007]
 S: A142 OK [READ-WRITE] SELECT completed</artwork>
                     </figure>
                 </section>
-                <section title='NOMODSEQ Response Code'>
+                <section title='NOMODSEQ Response Code' anchor="nomodseq">
                     <t>
                         A server that doesn't support the persistent storage of mod-sequences
                         for the mailbox MUST send the OK untagged response including NOMODSEQ
@@ -294,7 +296,8 @@ S: A142 OK [READ-WRITE] SELECT completed
                     </figure>
                 </section>
             </section>
-        <section title='STORE and UID STORE Commands'>
+
+            <section title='STORE and UID STORE Commands' anchor="STORE">
 
    <t>This document defines the following STORE modifier (see Section 2.5
    of <xref target="RFC4466"/>):
@@ -311,7 +314,7 @@ S: A142 OK [READ-WRITE] SELECT completed
           untagged FETCH response MUST be sent, even if the .SILENT suffix
           is specified, and the response MUST include the MODSEQ message
           data item.  This is required to update the client's cache with the
-          correct mod-sequence values.  See Section 3.3.2 for more details.
+          correct mod-sequence values.  See <xref target="FETCH-MODSEQ"/> for more details.
         </t></list></t>
 
       <t>However, if the mod-sequence of any metadata item of the message
@@ -411,7 +414,7 @@ S: a102 OK [MODIFIED 12] Conditional STORE failed
    for different metadata items.  However, a server implementation
    SHOULD avoid generating spurious MODIFIED responses for +FLAGS/-FLAGS
    STORE operations, even when the server stores a single mod-sequence
-   per message.  Section 5 describes how this can be achieved.</t>
+   per message.  <xref target="server-implem-consider"/> describes how this can be achieved.</t>
 
    <t>Unless the server has included an unsolicited FETCH to update
    client's knowledge about messages that have failed the UNCHANGEDSINCE
@@ -444,11 +447,16 @@ The flag $Processed was set on the message 101...
 C: a107 NOOP
 S: * 101 FETCH (MODSEQ (303011130956) FLAGS ($Processed))
 S: a107 OK
+    </artwork>
+</figure>
 
-Or the flag hasn't changed, but another has (note that this server
+<t>Or the flag hasn't changed, but another has (note that this server
 behaviour is discouraged.  Server implementers should also see
-Section 5)...
+<xref target="server-implem-consider"/>)...</t>
 
+   <figure>
+
+<artwork>
 C: b107 NOOP
 S: * 101 FETCH (MODSEQ (303011130956) FLAGS (\Deleted \Answered))
 S: b107 OK
@@ -479,10 +487,15 @@ S: * 102 FETCH (MODSEQ (303181230852))
 ...
 S: * 150 FETCH (MODSEQ (303181230852))
 S: a106 OK [MODIFIED 101] Conditional STORE failed
+    </artwork>
+</figure>
 
-Or the flag hasn't changed, but another has (note that this server
+<t>Or the flag hasn't changed, but another has (note that this server
 behaviour is discouraged.  Server implementers should also see
-Section 5)...
+<xref target="server-implem-consider"/>)...</t>
+
+   <figure>
+<artwork>
 
 C: a106 STORE 100:150 (UNCHANGEDSINCE 212030000000)
   +FLAGS.SILENT ($Processed)
@@ -500,10 +513,14 @@ C: b108 STORE 101 (UNCHANGEDSINCE 303011130956)
   +FLAGS.SILENT ($Processed)
 S: * 101 FETCH (MODSEQ (303181230852))
 S: b108 OK Conditional Store completed
+    </artwork>
+</figure>
 
-Or the flag hasn't changed, but another has (nice server
-behaviour.  Server implementers should also see Section 5)...
+<t>Or the flag hasn't changed, but another has (nice server
+behaviour.  Server implementers should also see <xref target="server-implem-consider"/>)...</t>
 
+   <figure>
+<artwork>
 C: a106 STORE 100:150 (UNCHANGEDSINCE 212030000000)
    +FLAGS.SILENT ($Processed)
 S: * 100 FETCH (MODSEQ (303181230852))
@@ -515,6 +532,7 @@ S: * 150 FETCH (MODSEQ (303181230852))
 S: a106 OK Conditional STORE completed
 </artwork>
        </figure>
+
 <figure title='Example 11'>
 
       <preamble>The following example is based on the example from the Section
@@ -557,8 +575,7 @@ S: b003 OK Conditional Store completed
    client specifies:
 
    <list style='empty'>
-         <t>e105 STORE 7,3:9 (UNCHANGEDSINCE 12121230045)
-          +FLAGS.SILENT (\Deleted)</t></list>
+         <t>e105 STORE 7,3:9 (UNCHANGEDSINCE 12121230045) +FLAGS.SILENT (\Deleted)</t></list>
 
    the server must not fail the operation for message 7 as part of
    processing "3:9" if it succeeded when message 7 was processed the
@@ -577,13 +594,13 @@ S: b003 OK Conditional Store completed
    CONDSTORE-aware clients that have opened the mailbox containing the
    message.</t>
 
-   <t>Server implementers should also see Section 3.8 for additional
+   <t>Server implementers should also see <xref target="server-qos"/> for additional
    quality of implementation issues related to the STORE command.</t>
    </section>
 
 <section title='FETCH and UID FETCH Commands'>
 
-<section title='CHANGEDSINCE FETCH Modifier'>
+<section title='CHANGEDSINCE FETCH Modifier' anchor="FETCH-CHANGEDSINCE">
 
    <t>This document defines the following FETCH modifier (see Section 2.4
    of <xref target="RFC4466"/>):
@@ -596,7 +613,7 @@ S: b003 OK Conditional Store completed
       have mod-sequence bigger than &lt;mod-sequence>.</t>
 
       <t>When CHANGEDSINCE FETCH modifier is specified, it implicitly adds
-      MODSEQ FETCH message data item (Section 3.3.2).</t>
+      MODSEQ FETCH message data item (<xref target="FETCH-MODSEQ"/>).</t>
     </list>
        </t>
 <figure title='Example 12'>
@@ -610,7 +627,7 @@ S: s100 OK FETCH completed
 </artwork>
     </figure>
 </section>
-<section title='MODSEQ Message Data Item in FETCH Command'>
+<section title='MODSEQ Message Data Item in FETCH Command' anchor="FETCH-MODSEQ">
 
    <t>This extension adds a MODSEQ message data item to the FETCH command.
    The MODSEQ message data item allows clients to retrieve mod-sequence
@@ -632,7 +649,7 @@ S: s100 OK FETCH completed
       <t>The MODSEQ response data item is returned if the client issued
       FETCH with MODSEQ message data item.  It also allows the server to
       notify the client about mod-sequence changes caused by conditional
-      STOREs (Section 3.2) and/or changes caused by external sources.</t>
+      STOREs (<xref target="STORE"/>) and/or changes caused by external sources.</t>
 </list></t>
 
    <figure title='Example 13'>
@@ -720,11 +737,13 @@ Both changes are reported in the session 2...
 </artwork>
        </figure>
 
-   <t>Server implementers should also see Section 3.8 for additional
+   <t>Server implementers should also see <xref target="server-qos"/> for additional
    quality of implementation issues related to the FETCH command.</t>
 </section>
 
-<section title='MODSEQ Search Criterion in SEARCH'>
+</section>
+
+<section title='MODSEQ Search Criterion in SEARCH' anchor="SEARCH-MODSEQ">
 
    <t>The MODSEQ criterion for the SEARCH command allows a client to search
    for the metadata items that were modified since a specified moment.</t>
@@ -756,7 +775,7 @@ Both changes are reported in the session 2...
    <t>If client specifies a MODSEQ criterion in a SEARCH command and the
    server returns a non-empty SEARCH result, the server MUST also append
    (to the end of the untagged SEARCH response) the highest mod-sequence
-   for all messages being returned.  See also Section 3.5.</t>
+   for all messages being returned.  See also <xref target="untagged-search"/>.</t>
 
    <figure title='Example 15'>
 <artwork>
@@ -778,7 +797,7 @@ S: * SEARCH
 S: t OK Search complete, nothing found</artwork></figure>
 </section>
 
-<section title='Modified SEARCH Untagged Response'>
+<section title='Modified SEARCH Untagged Response' anchor="untagged-search">
 
 <figure>
 <artwork>
@@ -793,8 +812,8 @@ Data:       zero or more numbers
    <t>If a client specifies a MODSEQ criterion in a SEARCH (or UID SEARCH)
    command and the server returns a non-empty SEARCH result, the server
    MUST also append (to the end of the untagged SEARCH response) the
-   highest mod-sequence for all messages being returned.  See Section
-   3.4 for examples.</t>
+   highest mod-sequence for all messages being returned.
+   See <xref target="untagged-search"/> for examples.</t>
 </section>
 <section title='HIGHESTMODSEQ Status Data Items'>
 
@@ -805,8 +824,8 @@ Data:       zero or more numbers
       The highest mod-sequence value of all messages in the mailbox.
       This is the same value that is returned by the server in the
       HIGHESTMODSEQ response code in an OK untagged response (see
-      Section 3.1.1).  If the server doesn't support the persistent
-      storage of mod-sequences for the mailbox (see Section 3.1.2), the
+      <xref target="highestmodseq"/>).  If the server doesn't support the persistent
+      storage of mod-sequences for the mailbox (see <xref target="nomodseq"/>), the
       server MUST return 0 as the value of HIGHESTMODSEQ status data
       item.</t></list></t>
 
@@ -817,7 +836,7 @@ S: * STATUS blurdybloop (MESSAGES 231 UIDNEXT 44292
    HIGHESTMODSEQ 7011231777)
 S: A042 OK STATUS completed
 </artwork></figure>
-    </section>
+</section>
 
 <section title='CONDSTORE Parameter to SELECT and EXAMINE'>
 
@@ -847,7 +866,8 @@ S: A142 OK [READ-WRITE] SELECT completed, CONDSTORE is now enabled
 </artwork>
 </figure>
 </section>
-<section title='Additional Quality-of-Implementation Issues'>
+
+<section title='Additional Quality-of-Implementation Issues' anchor="server-qos">
 
    <t>Server implementations should follow the following rule, which
    applies to any successfully completed STORE/UID STORE (with and
@@ -864,8 +884,9 @@ S: A142 OK [READ-WRITE] SELECT completed, CONDSTORE is now enabled
    has violated the SHOULD mentioned above, and that when one or more
    clients set and unset (or unset and set) the flag in another session.</t>
 </section>
-    </section>
+
 </section>
+
 <section title='Formal Syntax'>
 
    <t>The following syntax specification uses the Augmented Backus-Naur
@@ -888,7 +909,7 @@ S: A142 OK [READ-WRITE] SELECT completed, CONDSTORE is now enabled
                           ;; extends non-terminal defined in [RFC4466].
                           ;; Value 0 denotes that the mailbox doesn't
                           ;; support persistent mod-sequences
-                          ;; as described in Section 3.1.2
+                          ;; as described in Section 3.1.2 [[Check the ref]]
 
    store-modifier      =/ "UNCHANGEDSINCE" SP mod-sequence-valzer
                           ;; Only a single "UNCHANGEDSINCE" may be
@@ -985,7 +1006,7 @@ S: A142 OK [READ-WRITE] SELECT completed, CONDSTORE is now enabled
    attr-flag-keyword   = atom]]></artwork></figure>
 </section>
 
-<section title='Server Implementation Considerations'>
+<section title='Server Implementation Considerations' anchor="server-implem-consider">
 
    <t>This section describes how a server implementation that doesn't store
    separate per-metadata mod-sequences for different metadata items can
@@ -1039,8 +1060,9 @@ C: a106 STORE 100:150 (UNCHANGEDSINCE 212030000000)
 S: * 101 FETCH (MODSEQ (303011130956)
    FLAGS ($Processed \Deleted \Answered))</artwork></figure>
 
-   <t>See also Section 3.8 for additional quality-of-implementation issues.</t>
+   <t>See also <xref target="server-qos"/> for additional quality-of-implementation issues.</t>
 </section>
+
 <section title='Security Considerations'>
 
    <t>It is believed that the Conditional STORE extension doesn't raise any
