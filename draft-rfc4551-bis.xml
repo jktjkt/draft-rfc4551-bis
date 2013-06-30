@@ -11,6 +11,7 @@
         <!ENTITY rfc1305 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.1305.xml'>
         <!ENTITY rfc2180 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2180.xml'>
         <!ENTITY rfc2683 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2683.xml'>
+        <!ENTITY rfc5161 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.5161.xml'>
 ]>
 
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
@@ -153,6 +154,8 @@
                 item,</t>
                 <t>a FETCH command with the CHANGEDSINCE modifier, or</t>
                 <t>a STORE command with the UNCHANGEDSINCE modifier.</t>
+                <t>a ENABLE command containing "CONDSTORE" as one of the parameters.
+                (This requirement only applies to servers that also implement the ENABLE extension <xref target='RFC5161'/>.)</t>
                 </list>
             </t>
 
@@ -166,9 +169,9 @@
             as described above.  The term "CONDSTORE enabling command" will refer
             any of the commands listed above.  A future extension to this
             document may extend the list of CONDSTORE enabling commands.  A first
-            CONDSTORE enabling command executed in the session MUST cause the
-            server to return HIGHESTMODSEQ (<xref target="highestmodseq"/>) unless the server has
-            sent NOMODSEQ (<xref target="nomodseq"/>) response code when the currently
+            CONDSTORE enabling command executed in the session with a mailbox selected MUST cause the
+            server to return HIGHESTMODSEQ (<xref target="highestmodseq"/>) for the mailbox,
+            unless the server has sent NOMODSEQ (<xref target="nomodseq"/>) response code when the currently
             selected mailbox was selected.</t>
 
             <t>The rest of this document describes the protocol changes more
@@ -235,7 +238,11 @@
                             for a mailbox, it doesn't have to keep the same HIGHESTMODSEQ for
                             the mailbox.
                         </t>
-                    </list></t>
+                    </list>
+                    Note that this requirement applies whether or not a CONDSTORE enabling command
+                    was issued in the session.
+                    </t>
+
                     <t>A disconnected client can use the value of HIGHESTMODSEQ to check if
                     it has to refetch metadata from the server.  If the UIDVALIDITY value
                     has changed for the selected mailbox, the client MUST delete the
@@ -267,8 +274,12 @@ S: A142 OK [READ-WRITE] SELECT completed</artwork>
                     <t>
                         A server that doesn't support the persistent storage of mod-sequences
                         for the mailbox MUST send the OK untagged response including NOMODSEQ
-                        response code with every successful SELECT or EXAMINE command.  A
-                        server that returned NOMODSEQ response code for a mailbox, which
+                        response code with every successful SELECT or EXAMINE command.
+                        Note that this requirement applies whether or not a CONDSTORE enabling command
+                        was issued in the session.
+                    </t>
+                    <t>
+                        A server that returned NOMODSEQ response code for a mailbox, which
                         subsequently receives one of the following commands while the mailbox
                         is selected:
                         <list style='symbols'>
@@ -1148,6 +1159,7 @@ S: * 101 FETCH (MODSEQ (303011130956)
     &rfc5234; <!--ABNF-->
     &rfc3501; <!--IMAP4rev1-->
     &rfc4466; <!--IMAP ABNF-->
+    &rfc5161; <!--IMAP ENABLE-->
 </references>
 
 <references title='Informative References'>
@@ -1164,6 +1176,10 @@ S: * 101 FETCH (MODSEQ (303011130956)
   <t>Fixed errata 3401, 3506 and 3509.</t>
 
   <t>Updated references.</t>
+
+  <t>Incorporated some text from RFC 5161 (no semantic change.)</t>
+  
+  <t>Editorial corrections.</t>
 
 </section>
 
