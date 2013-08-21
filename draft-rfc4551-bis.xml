@@ -758,7 +758,7 @@ Both changes are reported in the session 2...
 
 <section title='MODSEQ Search Criterion in SEARCH' anchor="SEARCH-MODSEQ">
 
-   <t>The MODSEQ criterion for the SEARCH command allows a client to search
+   <t>The MODSEQ criterion for the SEARCH (or UID SEARCH) command allows a client to search
    for the metadata items that were modified since a specified moment.</t>
 
    <t>Syntax:  MODSEQ [&lt;entry-name> &lt;entry-type-req>] &lt;mod-sequence-valzer>
@@ -785,7 +785,7 @@ Both changes are reported in the session 2...
       quoted strings.</t>
    </list></t>
 
-   <t>If client specifies a MODSEQ criterion in a SEARCH command and the
+   <t>If client specifies a MODSEQ criterion in a SEARCH (or UID SEARCH) command and the
    server returns a non-empty SEARCH result, the server MUST also append
    (to the end of the untagged SEARCH response) the highest mod-sequence
    for all messages being returned.  See also <xref target="untagged-search"/>.
@@ -980,7 +980,7 @@ SORT response Data:       zero or more numbers
                           ;;
                           ;; This change applies to all commands
                           ;; referencing this non-terminal, in
-                          ;; particular SEARCH.
+                          ;; particular SEARCH, SORT and THREAD.
 
    search-modsequence  = "MODSEQ" [search-modseq-ext] SP
                          mod-sequence-valzer
@@ -1032,6 +1032,10 @@ SORT response Data:       zero or more numbers
 
    mailbox-data        =/ "SEARCH" [1*(SP nz-number) SP
                           search-sort-mod-seq]
+
+   sort-data           = "SORT" [1*(SP nz-number) SP
+                          search-sort-mod-seq]
+                          ; Updates SORT response from RFC 5256
 
    attr-flag           = "\\Answered" / "\\Flagged" / "\\Deleted" /
                          "\\Seen" / "\\Draft" / attr-flag-keyword /
