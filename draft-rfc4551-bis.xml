@@ -12,6 +12,8 @@
         <!ENTITY rfc2180 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2180.xml'>
         <!ENTITY rfc2683 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2683.xml'>
         <!ENTITY rfc5161 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.5161.xml'>
+        <!ENTITY rfc5256 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.5256.xml'>
+
 ]>
 
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
@@ -786,7 +788,8 @@ Both changes are reported in the session 2...
    <t>If client specifies a MODSEQ criterion in a SEARCH command and the
    server returns a non-empty SEARCH result, the server MUST also append
    (to the end of the untagged SEARCH response) the highest mod-sequence
-   for all messages being returned.  See also <xref target="untagged-search"/>.</t>
+   for all messages being returned.  See also <xref target="untagged-search"/>.
+   <!--////Clarify that ESEARCH overrides this requirement?--></t>
 
    <figure title='Example 15'>
 <artwork>
@@ -876,6 +879,35 @@ S: * OK [HIGHESTMODSEQ 715194045007]
 S: A142 OK [READ-WRITE] SELECT completed, CONDSTORE is now enabled
 </artwork>
 </figure>
+</section>
+
+<section title='Interaction with IMAP SORT and THREAD extensions'>
+
+  <t>
+  MODSEQ Search Criterion (see <xref target="SEARCH-MODSEQ"/>) causes modifications
+  to SORT <xref target="RFC5256"/> responses similar to modifications to SEARCH responses
+  defined in <xref target="untagged-search"/>:
+  </t>
+
+<figure>
+<artwork>
+SORT response Data:       zero or more numbers
+                          mod-sequence value (omitted if no match)
+</artwork>
+    </figure>
+
+   <t>This document extends syntax of the untagged SORT response to
+   include the highest mod-sequence for all messages being returned.</t>
+
+   <t>If a client specifies a MODSEQ criterion in a SORT (or UID SORT)
+   command and the server returns a non-empty SORT result, the server
+   MUST also append (to the end of the untagged SORT response) the
+   highest mod-sequence for all messages being returned.</t>
+
+   <t>THREAD commands which include a MODSEQ Search Criterion return
+   THREAD responses as specified in <xref target="RFC5256"/>.
+   </t>
+
 </section>
 
 <section title='Additional Quality-of-Implementation Issues' anchor="server-qos">
@@ -1160,6 +1192,7 @@ S: * 101 FETCH (MODSEQ (303011130956)
     &rfc3501; <!--IMAP4rev1-->
     &rfc4466; <!--IMAP ABNF-->
     &rfc5161; <!--IMAP ENABLE-->
+    &rfc5256; <!--IMAP SORT & THREAD-->
 </references>
 
 <references title='Informative References'>
