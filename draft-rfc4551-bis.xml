@@ -11,8 +11,10 @@
         <!ENTITY rfc1305 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.1305.xml'>
         <!ENTITY rfc2180 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2180.xml'>
         <!ENTITY rfc2683 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.2683.xml'>
+        <!ENTITY rfc4731 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.4731.xml'>
         <!ENTITY rfc5161 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.5161.xml'>
         <!ENTITY rfc5256 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.5256.xml'>
+        <!ENTITY rfc5267 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.5267.xml'>
 
 ]>
 
@@ -789,7 +791,9 @@ Both changes are reported in the session 2...
    server returns a non-empty SEARCH result, the server MUST also append
    (to the end of the untagged SEARCH response) the highest mod-sequence
    for all messages being returned.  See also <xref target="untagged-search"/>.
-   <!--////Clarify that ESEARCH overrides this requirement?--></t>
+   Note that other IMAP extensions such as ESEARCH <xref target="RFC4731"/>
+   can override this requirement (see <xref target="esearch-esort-modseq"/> for
+   more details.)</t>
 
    <figure title='Example 15'>
 <artwork>
@@ -902,11 +906,47 @@ SORT response Data:       zero or more numbers
    <t>If a client specifies a MODSEQ criterion in a SORT (or UID SORT)
    command and the server returns a non-empty SORT result, the server
    MUST also append (to the end of the untagged SORT response) the
-   highest mod-sequence for all messages being returned.</t>
+   highest mod-sequence for all messages being returned.
+   Note that other IMAP extensions such as ESORT <xref target="RFC5267"/>
+   can override this requirement (see <xref target="esearch-esort-modseq"/> for
+   more details.)
+   </t>
 
    <t>THREAD commands which include a MODSEQ Search Criterion return
    THREAD responses as specified in <xref target="RFC5256"/>.
    </t>
+
+</section>
+
+<section title='Interaction with IMAP ESORT and ESEARCH extensions' anchor="esearch-esort-modseq">
+
+   <t>If a client specifies a MODSEQ criterion in an extended SEARCH (or extended UID SEARCH)
+   <xref target="RFC4731"/> command and the server returns a non-empty SEARCH result,
+   the server MUST return the ESEARCH response containing the MODSEQ result option
+   as defined in Section 3.2 of <xref target="RFC4731"/>.
+   </t>
+
+<figure title='Example 19'>
+<artwork>
+C: a SEARCH RETURN (ALL) MODSEQ 1234
+S: * ESEARCH (TAG "a") ALL 1:3,5 MODSEQ 1236
+S: a OK Extended SEARCH completed
+</artwork>
+</figure>
+
+   <t>If a client specifies a MODSEQ criterion in an extended SORT (or extended UID SORT)
+   <xref target="RFC5267"/> command and the server returns a non-empty SORT result,
+   the server MUST return the ESEARCH response containing the MODSEQ result option
+   defined in Section 3.2 of <xref target="RFC4731"/>.
+   </t>
+
+<figure title='Example 20'>
+<artwork>
+C: a SORT RETURN (ALL) (DATE) UTF-8 MODSEQ 1234
+S: * ESEARCH (TAG "a") ALL 5,3,2,1 MODSEQ 1236
+S: a OK Extended SORT completed
+</artwork>
+</figure>
 
 </section>
 
@@ -1206,6 +1246,8 @@ S: * 101 FETCH (MODSEQ (303011130956)
     &rfc5257; <!--IMAP ANNOTATE-->
     &rfc1305; <!--NTP-->
     &rfc2180; <!--IMAP4 Multi-Accessed Mailbox Practice-->
+    &rfc4731; <!--IMAP ESEARCH-->
+    &rfc5267; <!--IMAP CONTEXT & ESORT-->
 </references>
 
 <section title='Changes since RFC 4551'>
