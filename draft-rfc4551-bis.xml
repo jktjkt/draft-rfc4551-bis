@@ -26,7 +26,7 @@
 <?rfc iprnotified="no" ?>
 <?rfc strict="yes" ?>
 
-<rfc category='std' ipr='trust200902' docName='draft-ietf-qresync-rfc4551bis-03.txt' obsoletes='4551' updates='3501, 2683'>
+<rfc category='std' ipr='trust200902' docName='draft-ietf-qresync-rfc4551bis-04.txt' obsoletes='4551' updates='3501, 2683'>
     <front>
         <title abbrev='IMAP CONDSTORE'>IMAP Extension for Conditional STORE Operation
             or Quick Flag Changes Resynchronization</title>
@@ -156,9 +156,9 @@
                 <t>a STATUS (HIGHESTMODSEQ) command,</t>
                 <t>a FETCH or SEARCH command that includes the MODSEQ message data
                 item,</t>
-                <t>a FETCH command with the CHANGEDSINCE modifier, or</t>
-                <t>a STORE command with the UNCHANGEDSINCE modifier.</t>
-                <t>a ENABLE command containing "CONDSTORE" as one of the parameters.
+                <t>a FETCH command with the CHANGEDSINCE modifier,</t>
+                <t>a STORE command with the UNCHANGEDSINCE modifier, or</t>
+                <t>an ENABLE command containing "CONDSTORE" as one of the parameters.
                 (This requirement only applies to servers that also implement the ENABLE extension <xref target='RFC5161'/>.)</t>
                 </list>
             </t>
@@ -219,7 +219,7 @@
             <section title='New OK Untagged Responses for SELECT and EXAMINE'>
 
                 <t>This document adds two new response codes, HIGHESTMODSEQ and
-                NOMODSEQ.  One of those response codes MUST be returned in the OK
+                NOMODSEQ.  One of these response codes MUST be returned in the OK
                 untagged response for a successful SELECT/EXAMINE command.</t>
 
                 <t>When opening a mailbox, the server must check if the mailbox supports
@@ -292,7 +292,7 @@ S: A142 OK [READ-WRITE] SELECT completed</artwork>
                             item, or</t>
                             <t>a STORE command with the UNCHANGEDSINCE modifier</t>
                         </list>
-                        MUST reject any such command with the tagged BAD response.
+                        MUST reject any such command with a tagged BAD response.
                     </t>
                     <figure title='Example 2'>
                         <artwork>
@@ -322,7 +322,7 @@ S: A142 OK [READ-WRITE] SELECT completed
 
           For each message specified in the message set, the server performs
           the following.  If the mod-sequence of any metadata item of the
-          message is equal or less than the specified UNCHANGEDSINCE value,
+          message is equal to or less than the specified UNCHANGEDSINCE value,
           then the requested operation (as described by the message data
           item) is performed.  If the operation is successful, the server
           MUST update the mod-sequence attribute of the message.  An
@@ -340,7 +340,7 @@ S: A142 OK [READ-WRITE] SELECT completed
       command) is added to the list of messages that failed the
       UNCHANGEDSINCE test.</t>
 
-      <t>When the server finished performing the operation on all the
+      <t>When the server finishes performing the operation on all the
       messages in the message set, it checks for a non-empty list of
       messages that failed the UNCHANGEDSINCE test.  If this list is
       non-empty, the server MUST return in the tagged response a
@@ -381,9 +381,11 @@ S: c101 OK Store (conditional) completed</artwork>
 </figure>
 <figure title='Example 6'>
 
-      <preamble>In spite of the failure of the conditional STORE operation for
-      message 7, the server continues to process the conditional STORE
-      in order to find all messages that fail the test.</preamble>
+      <preamble>
+        The failure of the conditional STORE operation for any particular message
+        or messages (7 in this example) does not stop the server
+        from finding all messages that fail the UNCHANGEDSINCE test. All such messages are
+        returned in the MODIFIED response code.</preamble>
 <artwork>
 C: d105 STORE 7,5,9 (UNCHANGEDSINCE 320162338)
    +FLAGS.SILENT (\Deleted)
@@ -577,7 +579,7 @@ expunged, the client retries the operation only for the message 2.
 The updated UNCHANGEDSINCE value is used.
 
 C: b003 STORE 2 (UNCHANGEDSINCE 320172340) +FLAGS (\Seen)
-S: * 2 FETCH (MODSEQ (320180050))
+S: * 2 FETCH (MODSEQ (320180050) FLAGS (\SEEN \Flagged))
 S: b003 OK Conditional Store completed
 </artwork>
 </figure>
@@ -596,9 +598,9 @@ S: b003 OK Conditional Store completed
    processing "3:9" if it succeeded when message 7 was processed the
    first time.</t>
 
-   <t>Once the client specified the UNCHANGEDSINCE modifier in a STORE
-   command, the server MUST include the MODSEQ fetch response data items
-   in all subsequent unsolicited FETCH responses.</t>
+   <t>As specified in <xref target="intro"/>, once the client specified the UNCHANGEDSINCE modifier in a STORE
+     command, the server starts including the MODSEQ fetch response data items
+     in all subsequent unsolicited FETCH responses.</t>
 
    <t>This document also changes the behaviour of the server when it has
    performed a STORE or UID STORE command and the UNCHANGEDSINCE
@@ -648,8 +650,8 @@ S: s100 OK FETCH completed
    The MODSEQ message data item allows clients to retrieve mod-sequence
    values for a range of messages in the currently selected mailbox.</t>
 
-   <t>Once the client specified the MODSEQ message data item in a FETCH
-   request, the server MUST include the MODSEQ fetch response data items
+   <t>As specified in <xref target="intro"/>, once the client has specified the MODSEQ message data item in a FETCH
+   request, the server starts including the MODSEQ fetch response data items
    in all subsequent unsolicited FETCH responses.
 
    <list style='hanging'>
@@ -773,7 +775,7 @@ Both changes are reported in the session 2...
       cache.  The client may also specify &lt;entry-name> (name of metadata
       item) and &lt;entry-type-req> (type of metadata item) before
       &lt;mod-sequence-valzer>.  &lt;entry-type-req> can be one of "shared",
-      "priv" (private), or "all".  The latter means that the server
+      "priv" (private), or "all".  The last means that the server
       should use the biggest value among "priv" and "shared" mod-
       sequences for the metadata item.  If the server doesn't store
       internally separate mod-sequences for different metadata items, it
@@ -1221,7 +1223,7 @@ S: * 101 FETCH (MODSEQ (303011130956)
         <t>Many thanks to Randall Gellens for his thorough review of the
         document.</t>
 
-        <t>The authors also acknowledge the feedback provided by Cyrus Daboo,
+        <t>The authors also acknowledge the feedback provided by Pete Maclean, Cyrus Daboo,
         Larry Greenfield, Chris Newman, Harrie Hazewinkel, Arnt Gulbrandsen,
         Timo Sirainen, Mark Crispin, Ned Freed, Ken Murchison, and Dave
         Cridland.</t>
