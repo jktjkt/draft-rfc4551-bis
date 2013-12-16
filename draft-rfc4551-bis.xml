@@ -106,7 +106,7 @@
       </t>
       <t>
           An IMAP server that supports CONDSTORE MUST associate a positive
-          unsigned 64-bit value called a modification sequence (mod-sequence)
+          unsigned 63-bit (*) value called a modification sequence (mod-sequence)
           with every IMAP message.  This is an opaque value updated by the
           server whenever a metadata item is modified.  The server MUST
           guarantee that each STORE command performed on the same mailbox
@@ -120,6 +120,10 @@
           <xref target="NTP"/> client adjusting the time), the next generated value might be
           less than the previous one.
       </t>
+
+      <t>(*) Note: RFC 4551 defined mod-sequences as unsigned 64-bit values. In order to make implementations
+      on various platforms (such as Java) easier, this version of the document redefines them as unsigned 63-bit values.
+      This reflects consensus among WG members, including server implementers.</t>
       
       <t>
           Mod-sequences allow a client that supports the CONDSTORE extension to
@@ -2458,9 +2462,9 @@ S: A153 OK [HIGHESTMODSEQ 104] done
                           ;; per message mod-sequence
 
    mod-sequence-value  = 1*DIGIT
-                          ;; Positive unsigned 64-bit integer
+                          ;; Positive unsigned 63-bit integer
                           ;; (mod-sequence)
-                          ;; (1 <= n < 18,446,744,073,709,551,615)
+                          ;; (1 <= n <= 9,223,372,036,854,775,807)
 
    mod-sequence-valzer = "0" / mod-sequence-value
 
@@ -2663,6 +2667,8 @@ S: A153 OK [HIGHESTMODSEQ 104] done
     
     <section title='Changes since RFC 4551'>
 
+      <t>Changed mod-sequences to be unsigned 63-bit values (instead of unsigned 64-bit values).</t>
+
       <t>Fixed errata 3401 ("several typos in UNCHANGEDSINCE spelling"),
       3506 ("invalid ABNF for the MODIFIED response code") and
       3509 ("correction to an example").</t>
@@ -2681,6 +2687,8 @@ S: A153 OK [HIGHESTMODSEQ 104] done
     </section>
 
     <section title="Changes since RFC 5162">
+
+      <t>Changed mod-sequences to be unsigned 63-bit values (instead of unsigned 64-bit values).</t>
 
       <t>
       Addressed erratum #1365: http://www.rfc-editor.org/errata_search.php?eid=1365  
