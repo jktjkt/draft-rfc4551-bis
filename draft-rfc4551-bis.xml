@@ -14,7 +14,7 @@
         <!ENTITY rfc5267 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.5267.xml'>  
         <!ENTITY rfc5464 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.5464.xml'>
 ]>
-<rfc category="std" ipr="trust200902" docName="draft-ietf-qresync-rfc5162bis-04.txt"
+<rfc category="std" ipr="trust200902" docName="draft-ietf-qresync-rfc5162bis-05.txt"
 	 obsoletes="4551, 5162" updates='4315, 3501, 2683'>
 	<?xml-stylesheet href="rfc5162_files/rfc2629.htm" type="text/xsl"?>
         <?rfc strict="yes" ?>
@@ -247,7 +247,7 @@
 			<t>
 			The QRESYNC extension puts additional requirements on a server implementing
 			the CONDSTORE extension. Each mailbox that supports persistent
-			storage of mod-sequences, i.e., for which the server has sent
+			storage of mod-sequences, i.e., for which the server would send
 			a HIGHESTMODSEQ untagged OK response code on a successful
 			SELECT/EXAMINE, MUST increment the per-mailbox mod-sequence when one or
 			more messages are expunged due to EXPUNGE,  UID EXPUNGE or CLOSE; the
@@ -331,10 +331,10 @@
 
             <section title='New OK Untagged Responses for SELECT and EXAMINE'>
 
-<!--////As per Chris Newman: only make this a requirement once CONDSTORE and/or QRESYNC is enabled?-->              
                 <t>This document adds two new response codes, HIGHESTMODSEQ and
-                NOMODSEQ.  One of these two response codes MUST be returned in the OK
-                untagged response for a successful SELECT/EXAMINE command.</t>
+                NOMODSEQ.  One of these two response codes MUST be returned in an OK
+                untagged response for any successful SELECT/EXAMINE command issued after
+                a CONDSTORE enabling command.</t>
 
                 <t>When opening a mailbox, the server must check if the mailbox supports
                 the persistent storage of mod-sequences.  If the mailbox supports the
@@ -345,8 +345,9 @@
                 response including NOMODSEQ response code instead.</t>
 
                 <section title='HIGHESTMODSEQ Response Code' anchor="highestmodseq">
-                    <t>This document adds a new response code that is returned in the OK
-                    untagged response for the SELECT and EXAMINE commands.  A server
+                    <t>This document adds a new response code that is returned in an OK
+                    untagged response for the SELECT and EXAMINE commands.  
+                    Once a CONDSTORE enabling command is issued a server
                     supporting the persistent storage of mod-sequences for the mailbox
                     MUST send an OK untagged response including HIGHESTMODSEQ response
                     code with every successful SELECT or EXAMINE command:
@@ -358,8 +359,12 @@
                             the mailbox.
                         </t>
                     </list>
-                    Note that this requirement applies whether or not a CONDSTORE enabling command
-                    was issued in the session.
+
+                    Note that some existing CONDSTORE servers don't start tracking mod-sequences
+                    or don't report them until after a CONDSTORE enabling command is issued.
+                    Because of that, client wishing to receive HIGHESTMODSEQ/NOMODSEQ information
+                    must first send a CONDSTORE enabling command, for example by using
+                    SELECT/EXAMINE with CONDSTORE parameter (see <xref target='select-condstore-param'/>).
                     </t>
 
                     <t>A disconnected client can use the value of HIGHESTMODSEQ to check if
@@ -391,11 +396,16 @@ S: A142 OK [READ-WRITE] SELECT completed</artwork>
                 </section>
                 <section title='NOMODSEQ Response Code' anchor="nomodseq">
                     <t>
-                        A server that doesn't support the persistent storage of mod-sequences
-                        for the mailbox MUST send an OK untagged response including NOMODSEQ
-                        response code with every successful SELECT or EXAMINE command.
-                        Note that this requirement applies whether or not a CONDSTORE enabling command
-                        was issued in the session.
+                      Once a CONDSTORE enabling command is issued a server that doesn't support
+                      the persistent storage of mod-sequences
+                      for the mailbox MUST send an OK untagged response including NOMODSEQ
+                      response code with every successful SELECT or EXAMINE command.
+
+                      Note that some existing CONDSTORE servers don't return NOMODSEQ
+                      until after a CONDSTORE enabling command is issued.
+                      Because of that, client wishing to receive HIGHESTMODSEQ/NOMODSEQ information
+                      must first send a CONDSTORE enabling command, for example by using
+                      SELECT/EXAMINE with CONDSTORE parameter (see <xref target='select-condstore-param'/>).
                     </t>
                     <t>
                         A server that returned NOMODSEQ response code for a mailbox, which
@@ -436,8 +446,8 @@ S: A142 OK [READ-WRITE] SELECT completed
         <t hangText='UNCHANGEDSINCE &lt;mod-sequence>'>
 
           For each message specified in the message set, the server performs
-          the following.  If the mod-sequence of any metadata item of the
-          message is equal to or less than the specified UNCHANGEDSINCE value,
+          the following.  If the mod-sequence of every metadata item of the
+          message affected by the STORE/UID STORE is equal to or less than the specified UNCHANGEDSINCE value,
           then the requested operation (as described by the message data
           item) is performed.  If the operation is successful, the server
           MUST update the mod-sequence attribute of the message.  An
@@ -796,9 +806,18 @@ S: a OK Fetch complete
       a set of messages.</postamble>
        </figure>
 
+   <t>
+   Servers that only support the CONDSTORE extension (and not QRESYNC) SHOULD comply with
+   requirements from <xref target="uid-on-fetch"/>.
+   </t>
+
    <t>When a flag for a message is modified in a different session, the
-   server sends an unsolicited FETCH response containing the mod-
-   sequence for the message.</t>
+   server sends an unsolicited FETCH response containing the mod-sequence
+   for the message, as demonstrated in Example 14.
+   Note that when the server also supports the QRESYNC extension (<xref target="enable-qresync"/>)
+   and a "CONDSTORE enabling command" has been issued, all FETCH responses in the Example 14
+   must also include UID FETCH items as prescribed by <xref target="uid-on-fetch"/>.
+   </t>
 
    <figure title='Example 14'>
 
@@ -973,7 +992,7 @@ S: A042 OK STATUS completed
 </artwork></figure>
 </section>
 
-<section title='CONDSTORE Parameter to SELECT and EXAMINE'>
+<section title='CONDSTORE Parameter to SELECT and EXAMINE' anchor='select-condstore-param'>
 
    <t>The CONDSTORE extension defines a single optional select parameter,
    "CONDSTORE", which tells the server that it MUST include the MODSEQ
@@ -1169,7 +1188,7 @@ S: * 101 FETCH (MODSEQ (303011130956) FLAGS ($Processed \Deleted \Answered))
 
 		</section>
 
-		<section title="QRESYNC extension">
+		<section title="QRESYNC extension" anchor="qresync">
 
  <!--Is this worth repeating? Add a reference -->
       <t>All protocol changes and requirements specified for the CONDSTORE extension
@@ -1188,7 +1207,7 @@ S: * 101 FETCH (MODSEQ (303011130956) FLAGS ($Processed \Deleted \Answered))
         
       </section>
       
-      <section title="Use of ENABLE">
+      <section title="Use of ENABLE" anchor="enable-qresync">
         
 			    <t>Servers supporting QRESYNC MUST implement and advertise support for
 			    the ENABLE <xref target="RFC5161"/> IMAP extension. Also, the presence of the "QRESYNC"
@@ -1216,9 +1235,17 @@ S: * 101 FETCH (MODSEQ (303011130956) FLAGS ($Processed \Deleted \Answered))
       
       </section>
 
-      <section title="Additional requirements on QRESYNC servers">
+      <section title="Additional requirements on QRESYNC servers" anchor="uid-on-fetch">
 
-<!--////Is this really a requirement on QRESYNC or CONDSTORE? It looks like it is a part of CONDSTORE...-->
+<!--////Is this really a requirement on QRESYNC or CONDSTORE? It looks like it is a part of CONDSTORE...
+
+Bron> It's very unlikely to break any existing clients. 
+
+Timo: It wouldn't hurt, but I'm not sure if it would help much either.
+Anyway, I think the point was that with QRESYNC the client wouldn't necessarily have to keep MSN <-> UID mapping,
+since it gets VANISHED replies. With only CONDSTORE enabled the client would still have to keep the mapping
+to handle EXPUNGE replies. 
+-->
 			    <t>
 			    Once a "CONDSTORE enabling command" is issued by the client,
 			    the server MUST automatically include both UID and mod-sequence data
@@ -2636,7 +2663,16 @@ S: A153 OK [HIGHESTMODSEQ 104] done
     
     <section title='Changes since RFC 4551'>
 
-      <t>Fixed errata 3401, 3506 and 3509.</t>
+      <t>Fixed errata 3401 ("several typos in UNCHANGEDSINCE spelling"),
+      3506 ("invalid ABNF for the MODIFIED response code") and
+      3509 ("correction to an example").</t>
+
+      <t>Clarified that returning of HIGHESTMODSEQ/NOMODSEQ response codes is only required
+      once a CONDSTORE enabling command was issued.</t>
+
+      <t>Clarified that if multiple mod-sequences (for different metadata items)
+      are associated with a message, then all of them affecting a particular STORE UNCHANGEDSINCE
+      must be checked.</t>
 
       <t>Updated references.</t>
 
@@ -2672,7 +2708,13 @@ S: A153 OK [HIGHESTMODSEQ 104] done
       list discussion. The only exception is for mailboxes that return NOMODSEQ response code
       when they are selected.</t>
 
+      <t>Specified that IMAP SETMETADATA changes update per-mailbox HIGHESTMODSEQ.</t>
+
+      <t>Clarified that per-message annotations are also considered "metadata".</t>
+
       <t>Fixed some examples to report data that match requirements specified in the document.</t>
+
+      <t>Clarified some text and made some requirements normative. Also corrected a couple of SHOULDs to be MUSTs.</t>
 
       <t>Updated references.</t>
 
@@ -2687,7 +2729,7 @@ S: A153 OK [HIGHESTMODSEQ 104] done
       <t>
       In this revision of the document the authors also acknowledge the feedback provided
       by Timo Sirainen, Jan Kundrat, Pete Maclean, Eliot Lear, Chris Newman, Claudio Allocchio,
-      Michael Slusarz, Bron Gondwana and Mark Crispin.
+      Michael Slusarz, Bron Gondwana, Hoa V. DINH and Mark Crispin.
       </t>
 
       <t>See also RFC 4551 for the list of people who contributed to earlier version of this RFC.</t>
