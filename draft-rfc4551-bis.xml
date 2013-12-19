@@ -14,7 +14,7 @@
         <!ENTITY rfc5267 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.5267.xml'>  
         <!ENTITY rfc5464 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.5464.xml'>
 ]>
-<rfc category="std" ipr="trust200902" docName="draft-ietf-qresync-rfc5162bis-05.txt"
+<rfc category="std" ipr="trust200902" docName="draft-ietf-qresync-rfc5162bis-06.txt"
 	 obsoletes="4551, 5162" updates='4315, 3501, 2683'>
 	<?xml-stylesheet href="rfc5162_files/rfc2629.htm" type="text/xsl"?>
         <?rfc strict="yes" ?>
@@ -61,34 +61,35 @@
 
 		<abstract>
 
-<!--////CONDSTORE. Should we down-play the atomic lock aspect?-->
+<!--CONDSTORE-->
       <t>Often, multiple IMAP (RFC 3501) clients need to coordinate changes to
       a common IMAP mailbox.  Examples include different clients working on
       behalf of the same user, and multiple users accessing shared
       mailboxes.  These clients need a mechanism to synchronize state
-      changes for messages within the mailbox.  They must be able to
-      guarantee that only one client can change message state (e.g.,
-      message flags of the specific message being looked up) at any time.  An example of such an application is use
-      of an IMAP mailbox as a message queue with multiple dequeueing
-      clients.</t>
-
-      <t>The Conditional Store facility provides a protected update mechanism
-      for message state information that can detect and resolve conflicts
-      between multiple writing mail clients.</t>
-
-      <t>The Conditional Store facility also allows a client to quickly
+      changes for messages within the mailbox.
+      The Conditional Store facility allows a client to quickly
       resynchronize mailbox flag changes.</t>
 
-<!--////QRESYNC-->
- 
+      <t>The Conditional Store facility also provides a protected update mechanism
+      for message state information that can detect and resolve conflicts
+      between multiple writing mail clients. For example, the mechanism can be used to
+      guarantee that only one client can change message state at any time.
+      </t>
+
+<!--QRESYNC--> 
 			<t>This document additionally defines another IMAP extension, which gives 
 			an IMAP client the ability to quickly resynchronize any
-			previously opened mailbox as part of the SELECT
+			previously opened mailbox as part of the SELECT/EXAMINE
 			command, without the need for server-side state or
-			additional client round-trips. This
+			additional client round-trips. That extension builds on top of
+      the Conditional Store extension and covers message deletions
+      in addition to flag changes.
+<!--Too much information!      
+      This
 			extension also introduces a new response that allows for a more
 			compact representation of a list of expunged messages
 			(and always includes the Unique Identifiers (UIDs) expunged).
+-->
 			</t>
 		</abstract>
 	
@@ -145,9 +146,9 @@
       </t>
       <t>
           The server MAY store separate (per-message) modification sequence
-          values for different metadata items.  If the server does so, per-
-          message mod-sequence is the highest mod-sequence of all metadata
-          items for the specified message.
+          values for different metadata items.  If the server does so, per-message
+          mod-sequence is the highest mod-sequence of all metadata
+          items accessible to the currently logged in user for the specified message.
       </t>
       <t>
           The server that supports CONDSTORE is not required to be able to
