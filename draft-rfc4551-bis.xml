@@ -13,6 +13,7 @@
         <!ENTITY rfc5257 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.5257.xml'>  
         <!ENTITY rfc5267 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.5267.xml'>  
         <!ENTITY rfc5464 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.5464.xml'>
+        <!ENTITY rfc6851 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.6851.xml'>
 ]>
 <rfc category="std" ipr="trust200902" docName="draft-ietf-qresync-rfc5162bis-06.txt"
 	 obsoletes="4551, 5162" updates='4315, 3501, 2683'>
@@ -97,129 +98,49 @@
   
 	<middle>
 
-		<section title="Introduction and Overview" anchor="intro">
-      
-<!--////CONDSTORE-->
+		<section title="Introduction" anchor="intro">
+
+<!--CONDSTORE-->
       <t>
-          The Conditional STORE extension is present in any IMAP4
-          implementation that returns "CONDSTORE" as one of the supported
-          capabilities in the CAPABILITY command response.
-      </t>
-      <t>
-          An IMAP server that supports CONDSTORE MUST associate a positive
-          unsigned 63-bit (*) value called a modification sequence (mod-sequence)
-          with every IMAP message.  This is an opaque value updated by the
-          server whenever a metadata item is modified.  The server MUST
-          guarantee that each STORE command performed on the same mailbox
-          (including simultaneous stores to different metadata items from
-          different connections) will get a different mod-sequence value.
-          Also, for any two successful STORE operations performed in the same
-          session on the same mailbox, the mod-sequence of the second completed
-          operation MUST be greater than the mod-sequence of the first
-          completed.  Note that the latter rule disallows the direct use of the system
-          clock as a mod-sequence, because if system time changes (e.g., an NTP
-          <xref target="NTP"/> client adjusting the time), the next generated value might be
-          less than the previous one.
+      Often, multiple IMAP <xref target="RFC3501"/> clients need to coordinate changes to
+      a common IMAP mailbox.  Examples include different clients working on
+      behalf of the same user, and client representing multiple users accessing shared
+      mailboxes.  These clients need a mechanism to synchronize state
+      changes for messages within the mailbox.
+      The Conditional Store ("CONDSTORE") facility allows a client to quickly
+      resynchronize mailbox flag changes.
       </t>
 
-      <t>(*) Note: RFC 4551 defined mod-sequences as unsigned 64-bit values. In order to make implementations
-      on various platforms (such as Java) easier, this version of the document redefines them as unsigned 63-bit values.
-      This reflects consensus among WG members, including server implementers.</t>
-      
       <t>
-          Mod-sequences allow a client that supports the CONDSTORE extension to
-          determine if a message metadata has changed since some known moment.
- <!--////Switching from a not yet defined "metadata" to a more specific "flag"-->
-          Whenever the state of a flag changes (i.e., the flag is added where
-          previously it wasn't set, or the flag is removed and before it was
-          set) the value of the modification sequence for the message MUST be
-          updated.  Adding the flag when it is already present or removing when
-          it is not present SHOULD NOT change the mod-sequence.
-      </t>
-      <t>
-          When a message is appended to a mailbox (via the IMAP APPEND command,
-          COPY to the mailbox, or using an external mechanism) the server
-          generates a new modification sequence that is higher than the highest
-          modification sequence of all messages in the mailbox and assigns it
-          to the appended message.
-
-      </t>
-      <t>
-          The server MAY store separate (per-message) modification sequence
-          values for different metadata items.  If the server does so, per-message
-          mod-sequence is the highest mod-sequence of all metadata
-          items accessible to the currently logged in user for the specified message.
-      </t>
-      <t>
-          The server that supports CONDSTORE is not required to be able to
-          store mod-sequences for every available mailbox.  <xref target="nomodseq"/>
-          describes how the server may act if a particular mailbox doesn't
-          support the persistent storage of mod-sequences.
-      </t>
-      <t>
-          CONDSTORE makes the following changes to the IMAP4 protocol:
-          <list style='letters'>
-              <t>adds UNCHANGEDSINCE STORE modifier.</t>
-
-              <t>adds the MODIFIED response code which should be used with an OK
-              response to the STORE command.  (It can also be used in a NO
-              response.)</t>
-
-              <t>adds a new MODSEQ message data item for use with the FETCH
-              command.</t>
-
-              <t>adds CHANGEDSINCE FETCH modifier.</t>
-
-              <t>adds a new MODSEQ search criterion.</t>
-
-              <t>extends the syntax of untagged SEARCH responses to include
-              mod-sequence.</t>
-
-              <t>adds new OK untagged responses for the SELECT and EXAMINE
-              commands.</t>
-
-              <t>defines an additional parameter to SELECT/EXAMINE commands.</t>
-
-              <t>adds the HIGHESTMODSEQ status data item to the STATUS command.</t>
-          </list>
-      </t>
-      <t>
-          A client supporting CONDSTORE extension indicates its willingness to
-          receive mod-sequence updates in all untagged FETCH responses by
-          issuing:
-          <list style='symbols'>
-          <t>a SELECT or EXAMINE command with the CONDSTORE parameter,</t>
-          <t>a STATUS (HIGHESTMODSEQ) command,</t>
-          <t>a FETCH or SEARCH command that includes the MODSEQ message data
-          item,</t>
-          <t>a FETCH command with the CHANGEDSINCE modifier,</t>
-          <t>a STORE command with the UNCHANGEDSINCE modifier, or</t>
-          <t>an ENABLE command containing "CONDSTORE" as one of the parameters.
-          (This requirement only applies to servers that also implement the ENABLE extension <xref target='RFC5161'/>.)</t>
-          </list>
+      The Conditional Store facility also provides a protected update mechanism
+      for message state information that can detect and resolve conflicts
+      between multiple writing mail clients. The mechanism can be used to guarantee
+      that only one client can change message state at any given time.
+      For example, this can be used by multiple clients which treat
+      a mailbox as a message queue. <!--and need exclusive access to messages in the queue-->
       </t>
 
-      <t>The server MUST include mod-sequence data in all subsequent untagged
-      FETCH responses (until the connection is closed), whether they were
-      caused by a regular STORE, a STORE with UNCHANGEDSINCE modifier, or
-      an external agent.</t>
+      <t>
+      The Conditional Store facility is provided by associating a positive
+      unsigned 63-bit value called a modification sequence (mod-sequence)
+      with every IMAP message.  This is an opaque value updated by a CONDSTORE compliant
+      server whenever a metadata item (such as a message flag) is modified.
+      The server guarantees that each metadata item modification (including metadata set
+      as a part of message addition) performed on the same mailbox
+      (including simultaneous stores to different metadata items from
+      different connections) will get a different mod-sequence value.
+      Also, for any two successful metadata modification operations performed in the same
+      session on the same mailbox, the mod-sequence of the second completed
+      operation would be greater than the mod-sequence of the first
+      completed. These rules allow a client to list all metadata changes
+      since a well known point in time, as well as to perform conditional metadata
+      modifications based on an assumption that metadata state hasn't changed for
+      a particular message.
+      </t>
 
-      <t>This document uses the term "CONDSTORE-aware client" to refer to a
-      client that announces its willingness to receive mod-sequence updates
-      as described above.  The term "CONDSTORE enabling command" will refer to
-      any of the commands listed above.  A future extension to this
-      document may extend the list of CONDSTORE enabling commands.  A first
-      CONDSTORE enabling command executed in the session with a mailbox selected MUST cause the
-      server to return HIGHESTMODSEQ (<xref target="highestmodseq"/>) for the mailbox (if any is selected),
-      unless the server has sent NOMODSEQ (<xref target="nomodseq"/>) response code when the currently
-      selected mailbox was selected.</t>
+      <t>The CONDSTORE extension is described in more details in <xref target="condstore"/>.</t>
 
-      <!--
-      <t>The rest of this document describes the protocol changes more
-      rigorously.</t>
-      -->
-
-<!--////QRESYNC-->
+<!--QRESYNC-->
       
 			<t>
 			The CONDSTORE extension gives a disconnected client
@@ -242,27 +163,13 @@
 			experienced by the user as well as the amount of traffic
 			generated by resynchronization.
 			</t>
+
 			<t>
 			By extending the SELECT command to perform the additional
 			resynchronization, this also allows clients to reduce concurrent
 			connections to the IMAP server held purely for the sake of
 			avoiding the resynchronization.
 			</t>
-
-			<t>
-			The QRESYNC extension puts additional requirements on a server implementing
-			the CONDSTORE extension. Each mailbox that supports persistent
-			storage of mod-sequences, i.e., for which the server would send
-			a HIGHESTMODSEQ untagged OK response code on a successful
-			SELECT/EXAMINE, MUST increment the per-mailbox mod-sequence when one or
-			more messages are expunged due to EXPUNGE,  UID EXPUNGE or CLOSE; the
-			server MUST associate the incremented mod-sequence with the UIDs of
-			the expunged messages.
-<!--////Copy this to a separate section?-->      
-      Additionally, if the server also supports the IMAP METADATA extension <xref target="RFC5464"/>,
-      it MUST increment the per-mailbox mod-sequence when SETMETADATA successfully changes an annotation
-      on the corresponding mailbox.
-      </t>
 
  			<t>
 			A client that supports CONDSTORE but not QRESYNC might resynchronize
@@ -284,8 +191,12 @@
       Since CONDSTORE is a relatively new extension,
 			it is thought likely that clients that support it will also support QRESYNC.
 			</t>
+      
+      <t>
+      The QRESYNC extension is described in more details in <xref target="qresync"/>.
+      </t>
 
-		</section>
+    </section>
     
 	  <section title="Requirements Notation">
 			<t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL",
@@ -332,9 +243,151 @@
 
 		<section title="IMAP Protocol Changes">
       
-		<section title="CONDSTORE extension">
+		<section title="CONDSTORE extension" anchor="condstore">
 
-            <section title='New OK Untagged Responses for SELECT and EXAMINE'>
+      <t>
+        An IMAP server that supports CONDSTORE MUST associate a positive
+        unsigned 63-bit (*) value called a modification sequence (mod-sequence)
+        with every IMAP message.  This is an opaque value updated by the
+        server whenever a metadata item is modified.  The server MUST
+        guarantee that each STORE command performed on the same mailbox
+        (including simultaneous stores to different metadata items from
+        different connections) will get a different mod-sequence value.
+        Also, for any two successful STORE operations performed in the same
+        session on the same mailbox, the mod-sequence of the second completed
+        operation MUST be greater than the mod-sequence of the first
+        completed.  Note that the latter rule disallows the direct use of the system
+        clock as a mod-sequence, because if system time changes (e.g., an NTP
+        <xref target="NTP"/> client adjusting the time), the next generated value might be
+        less than the previous one.
+      </t>
+
+      <t>
+        (*) Note: RFC 4551 defined mod-sequences as unsigned 64-bit values. In order to make implementations
+        on various platforms (such as Java) easier, this version of the document redefines them as unsigned 63-bit values.
+        This reflects consensus among WG members, including server implementers.
+      </t>
+
+      <t>
+        Mod-sequences allow a client that supports the CONDSTORE extension to
+        determine if a message metadata has changed since some known moment.
+        <!--////Switching from a not yet defined "metadata" to a more specific "flag"-->
+        Whenever the state of a flag changes (i.e., the flag is added where
+        previously it wasn't set, or the flag is removed and before it was
+        set) the value of the modification sequence for the message MUST be
+        updated.  Adding the flag when it is already present or removing when
+        it is not present SHOULD NOT change the mod-sequence.
+      </t>
+      <t>
+        When a message is appended to a mailbox (via the IMAP APPEND command,
+        COPY to the mailbox, or using an external mechanism) the server
+        generates a new modification sequence that is higher than the highest
+        modification sequence of all messages in the mailbox and assigns it
+        to the appended message.
+
+      </t>
+      <t>
+        The server MAY store separate (per-message) modification sequence
+        values for different metadata items.  If the server does so, per-message
+        mod-sequence is the highest mod-sequence of all metadata
+        items accessible to the currently logged in user for the specified message.
+      </t>
+      <t>
+        The server that supports CONDSTORE is not required to be able to
+        store mod-sequences for every available mailbox.  <xref target="nomodseq"/>
+        describes how the server may act if a particular mailbox doesn't
+        support the persistent storage of mod-sequences.
+      </t>
+      <t>
+        CONDSTORE makes the following changes to the IMAP4 protocol:
+        <list style='letters'>
+          <t>adds UNCHANGEDSINCE STORE modifier.</t>
+
+          <t>
+            adds the MODIFIED response code which should be used with an OK
+            response to the STORE command.  (It can also be used in a NO
+            response.)
+          </t>
+
+          <t>
+            adds a new MODSEQ message data item for use with the FETCH
+            command.
+          </t>
+
+          <t>adds CHANGEDSINCE FETCH modifier.</t>
+
+          <t>adds a new MODSEQ search criterion.</t>
+
+          <t>
+            extends the syntax of untagged SEARCH responses to include
+            mod-sequence.
+          </t>
+
+          <t>
+            adds new OK untagged responses for the SELECT and EXAMINE
+            commands.
+          </t>
+
+          <t>defines an additional parameter to SELECT/EXAMINE commands.</t>
+
+          <t>adds the HIGHESTMODSEQ status data item to the STATUS command.</t>
+        </list>
+      </t>
+      <t>
+        A client supporting CONDSTORE extension indicates its willingness to
+        receive mod-sequence updates in all untagged FETCH responses by
+        issuing:
+        <list style='symbols'>
+          <t>a SELECT or EXAMINE command with the CONDSTORE parameter,</t>
+          <t>a STATUS (HIGHESTMODSEQ) command,</t>
+          <t>
+            a FETCH or SEARCH command that includes the MODSEQ message data
+            item,
+          </t>
+          <t>a FETCH command with the CHANGEDSINCE modifier,</t>
+          <t>a STORE command with the UNCHANGEDSINCE modifier, or</t>
+          <t>
+            an ENABLE command containing "CONDSTORE" as one of the parameters.
+            (This requirement only applies to servers that also implement the ENABLE extension <xref target='RFC5161'/>.)
+          </t>
+        </list>
+      </t>
+
+      <t>
+        The server MUST include mod-sequence data in all subsequent untagged
+        FETCH responses (until the connection is closed), whether they were
+        caused by a regular STORE, a STORE with UNCHANGEDSINCE modifier, or
+        an external agent.
+      </t>
+
+      <t>
+        This document uses the term "CONDSTORE-aware client" to refer to a
+        client that announces its willingness to receive mod-sequence updates
+        as described above.  The term "CONDSTORE enabling command" will refer to
+        any of the commands listed above.  A future extension to this
+        document may extend the list of CONDSTORE enabling commands.  A first
+        CONDSTORE enabling command executed in the session with a mailbox selected MUST cause the
+        server to return HIGHESTMODSEQ (<xref target="highestmodseq"/>) for the mailbox (if any is selected),
+        unless the server has sent NOMODSEQ (<xref target="nomodseq"/>) response code when the currently
+        selected mailbox was selected.
+      </t>
+
+      <!--
+      <t>The rest of this document describes the protocol changes more
+      rigorously.</t>
+      -->
+
+      <section title="Advertising support for CONDSTORE">
+
+        <t>
+          The Conditional STORE extension is present in any IMAP4
+          implementation that returns "CONDSTORE" as one of the supported
+          capabilities in the CAPABILITY command response.
+        </t>
+
+      </section>
+
+      <section title='New OK Untagged Responses for SELECT and EXAMINE'>
 
                 <t>This document adds two new response codes, HIGHESTMODSEQ and
                 NOMODSEQ.  One of these two response codes MUST be returned in an OK
@@ -1198,6 +1251,21 @@ S: * 101 FETCH (MODSEQ (303011130956) FLAGS ($Processed \Deleted \Answered))
  <!--Is this worth repeating? Add a reference -->
       <t>All protocol changes and requirements specified for the CONDSTORE extension
          are also a part of the QRESYNC extension.</t>
+
+      <t>
+        The QRESYNC extension puts additional requirements on a server implementing
+        the CONDSTORE extension. Each mailbox that supports persistent
+        storage of mod-sequences, i.e., for which the server would send
+        a HIGHESTMODSEQ untagged OK response code on a successful
+        SELECT/EXAMINE, MUST increment the per-mailbox mod-sequence when one or
+        more messages are expunged due to EXPUNGE, UID EXPUNGE, CLOSE or MOVE <xref target="RFC6851"/>;
+        the server MUST associate the incremented mod-sequence with the UIDs of
+        the expunged messages.
+<!--////Copy this to a separate section?-->
+        Additionally, if the server also supports the IMAP METADATA extension <xref target="RFC5464"/>,
+        it MUST increment the per-mailbox mod-sequence when SETMETADATA successfully changes an annotation
+        on the corresponding mailbox.
+      </t>
 
       <section title="Advertising support for QRESYNC">
         
@@ -2606,6 +2674,7 @@ S: A153 OK [HIGHESTMODSEQ 104] done
       &rfc4731; <!--IMAP ESEARCH-->
       &rfc5267; <!--IMAP CONTEXT & ESORT-->
       &rfc2180; <!--IMAP4 Multi-Accessed Mailbox Practice-->
+      &rfc6851; <!--IMAP MOVE-->
 			
 			<reference anchor="IMAP-DISC">
 				<front>
