@@ -47,9 +47,16 @@
 			</address>
 		</author>
 		<author initials="D." surname="Cridland" fullname="Dave Cridland">
-      <organization>Arcode</organization>
-      <address>
-				<email>dave@cridland.net</email>
+		        <organization>Arcode Inc</organization>
+		        <address>
+				<postal>
+					<street>4304 East West Highway</street>
+					<city>Bethesda</city>
+					<region>MD</region>
+					<code>20814</code>
+					<country>US</country>
+				</postal>
+				<email>dcridland@arcode.com</email>
 			</address>
 		</author>
 		<date year="2013"/>
@@ -66,31 +73,21 @@
       <t>Often, multiple IMAP (RFC 3501) clients need to coordinate changes to
       a common IMAP mailbox.  Examples include different clients working on
       behalf of the same user, and multiple users accessing shared
-      mailboxes.  These clients need a mechanism to synchronize state
-      changes for messages within the mailbox.
-      The Conditional Store facility allows a client to quickly
-      resynchronize mailbox flag changes.</t>
+      mailboxes.  These clients need a mechanism to efficiently synchronize state
+      changes for messages within the mailbox.</t>
 
-      <t>The Conditional Store facility also provides a protected update mechanism
-      for message state information that can detect and resolve conflicts
-      between multiple writing mail clients. For example, the mechanism can be used to
-      guarantee that only one client can change message state at any time.
+      <t>The Conditional Store facility provides a protected update mechanism
+      for message state information -- for example, the mechanism can be used to
+      guarantee that only one client can change message state at any time -- and
+      a mechanism for requesting only changes to message state.
       </t>
 
 <!--QRESYNC--> 
-			<t>This document additionally defines another IMAP extension, which gives 
-			an IMAP client the ability to quickly resynchronize any
-			previously opened mailbox as part of the SELECT/EXAMINE
-			command, without the need for server-side state or
-			additional client round-trips. That extension builds on top of
-      the Conditional Store extension and covers message deletions
-      in addition to flag changes.
-<!--Too much information!      
-      This
-			extension also introduces a new response that allows for a more
-			compact representation of a list of expunged messages
-			(and always includes the Unique Identifiers (UIDs) expunged).
--->
+			<t>This document additionally defines another IMAP extension,
+			Quick Resynchronization, which builds on the Conditional Store extension to provide
+			an IMAP client the ability to fully resynchronize a mailbox as
+			part of the SELECT/EXAMINE command, without the need for additional server-side
+			state or client round-trips.
 			</t>
 		</abstract>
 	
@@ -120,23 +117,9 @@
       a mailbox as a message queue. <!--and need exclusive access to messages in the queue-->
       </t>
 
-      <t>
-      The Conditional Store facility is provided by associating a positive
-      unsigned 63-bit value called a modification sequence (mod-sequence)
-      with every IMAP message.  This is an opaque value updated by a CONDSTORE compliant
-      server whenever a metadata item (such as a message flag) is modified.
-      The server guarantees that each metadata item modification (including metadata set
-      as a part of message addition) performed on the same mailbox
-      (including simultaneous stores to different metadata items from
-      different connections) will get a different mod-sequence value.
-      Also, for any two successful metadata modification operations performed in the same
-      session on the same mailbox, the mod-sequence of the second completed
-      operation would be greater than the mod-sequence of the first
-      completed. These rules allow a client to list all metadata changes
-      since a well known point in time, as well as to perform conditional metadata
-      modifications based on an assumption that metadata state hasn't changed for
-      a particular message.
-      </t>
+      <t>The Conditional Store facility is provided by associating a modification sequence
+      (mod-sequence) with every IMAP message. This is updated whenever metadata (such as a
+      message flag) is modified.</t>
 
       <t>The CONDSTORE extension is described in more details in <xref target="condstore"/>.</t>
 
@@ -171,26 +154,8 @@
 			avoiding the resynchronization.
 			</t>
 
- 			<t>
-			A client that supports CONDSTORE but not QRESYNC might resynchronize
-			a mailbox and discover that its HIGHESTMODSEQ has increased from the value
-			cached by the client.  If the increase is only
-			due to messages having been expunged
-			since the client last synchronized, the client is likely to send a
-			FETCH ... CHANGEDSINCE command that returns no data.  Thus, a client that
-			supports CONDSTORE but not QRESYNC might incur a penalty of an unneeded
-			round-trip when resynchronizing some mailboxes (those that have had messages
-			expunged but no flag changes since the last synchronization).
-			</t>
-
-			<t>
-			This extra round-trip is only incurred by clients that support CONDSTORE
-			but not QRESYNC, and only when a mailbox has had messages expunged but
-			no flag changes to non-expunged messages.
-<!--////Is this comment still appropriate or should it be reworded.-->
-      Since CONDSTORE is a relatively new extension,
-			it is thought likely that clients that support it will also support QRESYNC.
-			</t>
+ 			<!-- Two paras removed. Not that I disagree with anything here, but it's
+ 			     too long for the Introduction and was essentially marketing. -->
       
       <t>
       The QRESYNC extension is described in more details in <xref target="qresync"/>.
@@ -256,7 +221,7 @@
         Also, for any two successful STORE operations performed in the same
         session on the same mailbox, the mod-sequence of the second completed
         operation MUST be greater than the mod-sequence of the first
-        completed.  Note that the latter rule disallows the direct use of the system
+        completed. Note that the latter rule disallows the direct use of the system
         clock as a mod-sequence, because if system time changes (e.g., an NTP
         <xref target="NTP"/> client adjusting the time), the next generated value might be
         less than the previous one.
@@ -269,9 +234,13 @@
       </t>
 
       <t>
-        Mod-sequences allow a client that supports the CONDSTORE extension to
+These rules allow a client to list all metadata changes
+      since a well known point in time, as well as to perform conditional metadata
+      modifications based on an assumption that metadata state hasn't changed for
+      a particular message.</t>
+        <t>In particular, mod-sequences allow a client that supports the CONDSTORE extension to
         determine if a message metadata has changed since some known moment.
-        <!--////Switching from a not yet defined "metadata" to a more specific "flag"-->
+       <!--////Switching from a not yet defined "metadata" to a more specific "flag"-->
         Whenever the state of a flag changes (i.e., the flag is added where
         previously it wasn't set, or the flag is removed and before it was
         set) the value of the modification sequence for the message MUST be
@@ -1266,6 +1235,28 @@ S: * 101 FETCH (MODSEQ (303011130956) FLAGS ($Processed \Deleted \Answered))
         it MUST increment the per-mailbox mod-sequence when SETMETADATA successfully changes an annotation
         on the corresponding mailbox.
       </t>
+
+	<section title='Impact to naive clients'>
+		<t>
+            A client that supports CONDSTORE but not QRESYNC might resynchronize
+            a mailbox and discover that its HIGHESTMODSEQ has increased from the value
+            cached by the client.  If the increase is only
+            due to messages having been expunged
+            since the client last synchronized, the client is likely to send a
+            FETCH ... CHANGEDSINCE command that returns no data. Thus, a client that
+            supports CONDSTORE but not QRESYNC might incur a penalty of an unneeded
+            round-trip when resynchronizing some mailboxes (those that have had messages
+            expunged but no flag changes since the last synchronization).
+            </t>
+            
+            <t>
+            This extra round-trip is only incurred by clients that support CONDSTORE
+            but not QRESYNC, and only when a mailbox has had messages expunged but
+            no flag changes to non-expunged messages.
+            Since CONDSTORE is a relatively new extension,
+            it is thought likely that clients that support it will also support QRESYNC.
+            </t>
+	</section>
 
       <section title="Advertising support for QRESYNC">
         
