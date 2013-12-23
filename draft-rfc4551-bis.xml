@@ -154,9 +154,6 @@
 			avoiding the resynchronization.
 			</t>
 
- 			<!-- Two paras removed. Not that I disagree with anything here, but it's
- 			     too long for the Introduction and was essentially marketing. -->
-      
       <t>
       The QRESYNC extension is described in more details in <xref target="qresync"/>.
       </t>
@@ -1236,8 +1233,8 @@ S: * 101 FETCH (MODSEQ (303011130956) FLAGS ($Processed \Deleted \Answered))
         on the corresponding mailbox.
       </t>
 
-	<section title='Impact to naive clients'>
-		<t>
+	    <section title='Impact to CONDSTORE-only clients'>
+		        <t>
             A client that supports CONDSTORE but not QRESYNC might resynchronize
             a mailbox and discover that its HIGHESTMODSEQ has increased from the value
             cached by the client.  If the increase is only
@@ -1248,7 +1245,7 @@ S: * 101 FETCH (MODSEQ (303011130956) FLAGS ($Processed \Deleted \Answered))
             round-trip when resynchronizing some mailboxes (those that have had messages
             expunged but no flag changes since the last synchronization).
             </t>
-            
+
             <t>
             This extra round-trip is only incurred by clients that support CONDSTORE
             but not QRESYNC, and only when a mailbox has had messages expunged but
@@ -1256,7 +1253,7 @@ S: * 101 FETCH (MODSEQ (303011130956) FLAGS ($Processed \Deleted \Answered))
             Since CONDSTORE is a relatively new extension,
             it is thought likely that clients that support it will also support QRESYNC.
             </t>
-	</section>
+	    </section>
 
       <section title="Advertising support for QRESYNC">
         
