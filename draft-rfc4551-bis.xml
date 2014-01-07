@@ -506,7 +506,7 @@ S: A142 OK [READ-WRITE] SELECT completed
       <preamble>All messages pass the UNCHANGEDSINCE test.</preamble>
       <artwork>
 C: a103 UID STORE 6,4,8 (UNCHANGEDSINCE 12121230045)
-   +FLAGS.SILENT (\Deleted)
+    +FLAGS.SILENT (\Deleted)
 S: * 1 FETCH (UID 4 MODSEQ (12121231000))
 S: * 2 FETCH (UID 6 MODSEQ (12121230852))
 S: * 4 FETCH (UID 8 MODSEQ (12121230956))
@@ -516,7 +516,7 @@ S: a103 OK Conditional Store completed
        <figure title='Example 4'>
 <artwork>
 C: a104 STORE * (UNCHANGEDSINCE 12121230045) +FLAGS.SILENT
-   (\Deleted $Processed)
+    (\Deleted $Processed)
 S: * 50 FETCH (MODSEQ (12111230047))
 S: a104 OK Store (conditional) completed
 </artwork>
@@ -524,7 +524,7 @@ S: a104 OK Store (conditional) completed
 <figure title='Example 5'>
 <artwork>
 C: c101 STORE 50 (UNCHANGEDSINCE 12121230045) -FLAGS.SILENT
-   (\Deleted)
+    (\Deleted)
 S: * OK [HIGHESTMODSEQ 12111230047]
 S: * 50 FETCH (MODSEQ (12111230048))
 S: c101 OK Store (conditional) completed</artwork>
@@ -541,7 +541,7 @@ S: c101 OK Store (conditional) completed</artwork>
         returned in the MODIFIED response code.</preamble>
 <artwork>
 C: d105 STORE 7,5,9 (UNCHANGEDSINCE 320162338)
-   +FLAGS.SILENT (\Deleted)
+    +FLAGS.SILENT (\Deleted)
 S: * 5 FETCH (MODSEQ (320162350))
 S: d105 OK [MODIFIED 7,9] Conditional STORE failed</artwork>
     </figure>
@@ -553,7 +553,7 @@ S: d105 OK [MODIFIED 7,9] Conditional STORE failed</artwork>
 
 <artwork>
 C: d105 STORE 7,5,9 (UNCHANGEDSINCE 320162338)
-   +FLAGS.SILENT (\Deleted)
+    +FLAGS.SILENT (\Deleted)
 S: * 7 FETCH (MODSEQ (320162342) FLAGS (\Seen \Deleted))
 S: * 5 FETCH (MODSEQ (320162350))
 S: * 9 FETCH (MODSEQ (320162349) FLAGS (\Answered))
@@ -567,7 +567,7 @@ S: d105 OK [MODIFIED 7,9] Conditional STORE failed
 <figure title='Example 8'>
 <artwork>
 C: a102 STORE 12 (UNCHANGEDSINCE 0)
-   +FLAGS.SILENT ($MDNSent)
+    +FLAGS.SILENT ($MDNSent)
 S: a102 OK [MODIFIED 12] Conditional STORE failed
 </artwork>
 
@@ -605,7 +605,7 @@ S: a102 OK [MODIFIED 12] Conditional STORE failed
       UNCHANGEDSINCE operation has failed.</preamble>
 <artwork>
 C: a106 STORE 100:150 (UNCHANGEDSINCE 212030000000)
-   +FLAGS.SILENT ($Processed)
+    +FLAGS.SILENT ($Processed)
 S: * 100 FETCH (MODSEQ (303181230852))
 S: * 102 FETCH (MODSEQ (303181230852))
    ...
@@ -635,7 +635,7 @@ S: b107 OK
 the updated UNCHANGEDSINCE value
 
 C: b108 STORE 101 (UNCHANGEDSINCE 303011130956)
-  +FLAGS.SILENT ($Processed)
+    +FLAGS.SILENT ($Processed)
 S: * 101 FETCH (MODSEQ (303181230852))
 S: b108 OK Conditional Store completed
 </artwork>
@@ -650,7 +650,7 @@ The flag $Processed was set on the message 101 by another
 client...
 
 C: a106 STORE 100:150 (UNCHANGEDSINCE 212030000000)
-  +FLAGS.SILENT ($Processed)
+    +FLAGS.SILENT ($Processed)
 S: * 100 FETCH (MODSEQ (303181230852))
 S: * 101 FETCH (MODSEQ (303011130956) FLAGS ($Processed))
 S: * 102 FETCH (MODSEQ (303181230852))
@@ -668,7 +668,7 @@ behaviour is discouraged.  Server implementers should also see
 <artwork>
 
 C: a106 STORE 100:150 (UNCHANGEDSINCE 212030000000)
-  +FLAGS.SILENT ($Processed)
+    +FLAGS.SILENT ($Processed)
 S: * 100 FETCH (MODSEQ (303181230852))
 S: * 101 FETCH (MODSEQ (303011130956) FLAGS (\Deleted \Answered))
 S: * 102 FETCH (MODSEQ (303181230852))
@@ -680,7 +680,7 @@ S: a106 OK [MODIFIED 101] Conditional STORE failed
 the updated UNCHANGEDSINCE value
 
 C: b108 STORE 101 (UNCHANGEDSINCE 303011130956)
-  +FLAGS.SILENT ($Processed)
+    +FLAGS.SILENT ($Processed)
 S: * 101 FETCH (MODSEQ (303181230852))
 S: b108 OK Conditional Store completed
     </artwork>
@@ -692,7 +692,7 @@ behaviour.  Server implementers should also see <xref target="server-implem-cons
    <figure>
 <artwork>
 C: a106 STORE 100:150 (UNCHANGEDSINCE 212030000000)
-   +FLAGS.SILENT ($Processed)
+    +FLAGS.SILENT ($Processed)
 S: * 100 FETCH (MODSEQ (303181230852))
 S: * 101 FETCH (MODSEQ (303011130956) FLAGS ($Processed \Deleted
    \Answered))
@@ -887,7 +887,7 @@ The user modifies a private flag \Seen in session 1...
 
     C: C270 NOOP
     S: * 7 FETCH (FLAGS (\Deleted \Answered \Seen) MODSEQ
-       (12121231777))
+        (12121231777))
     S: C270 OK Noop completed
 
 ...but not in session 3.
@@ -1015,7 +1015,7 @@ Data:       zero or more numbers
 <artwork>
 C: A042 STATUS blurdybloop (UIDNEXT MESSAGES HIGHESTMODSEQ)
 S: * STATUS blurdybloop (MESSAGES 231 UIDNEXT 44292
-   HIGHESTMODSEQ 7011231777)
+    HIGHESTMODSEQ 7011231777)
 S: A042 OK STATUS completed
 </artwork></figure>
 </section>
@@ -1382,7 +1382,7 @@ to handle EXPUNGE replies.
 				S: * OK [UNSEEN 12] Message 12 is first unseen<vspace/>
 				S: * FLAGS (\Answered \Flagged \Draft \Deleted \Seen)<vspace/>
 				S: * OK [PERMANENTFLAGS (\Answered \Flagged \Draft<vspace/>
-				    \Deleted \Seen \*)] Permanent flags<vspace/>
+				&nbsp;&nbsp;&nbsp;&nbsp;\Deleted \Seen \*)] Permanent flags<vspace/>
 				S: A02 OK [READ-WRITE] Sorry, UIDVALIDITY mismatch
 				</t>
 				</list>
@@ -1507,7 +1507,7 @@ to handle EXPUNGE replies.
 <?rfc subcompact="yes"?>
 						<list style="hanging">
 							<t hangText="C:">A04 SELECT INBOX (QRESYNC (67890007<vspace/>
-							 90060115194045000 1:29997))</t>
+              &nbsp;90060115194045000 1:29997))</t>
 							<t hangText="S:">* 10003 EXISTS</t>
 							<t hangText="S:">* 4 RECENT</t>
 							<t hangText="S:">* OK [UIDVALIDITY 67890007] UIDVALIDITY</t>
@@ -1516,7 +1516,7 @@ to handle EXPUNGE replies.
 							<t hangText="S:">* OK [UNSEEN 7] There are some unseen messages in the mailbox</t>
 							<t hangText="S:">* FLAGS (\Answered \Flagged \Draft \Deleted \Seen)</t>
 							<t hangText="S:">* OK [PERMANENTFLAGS (\Answered \Flagged \Draft<vspace/>
-							\Deleted \Seen \*)] Permanent flags</t>
+               &nbsp;\Deleted \Seen \*)] Permanent flags</t>
 							<t hangText="S:">* VANISHED (EARLIER) 1:2,4:5,7:8,10:11,13:14,[...],<vspace/>
               29668:29669,29671:29996</t>
               <t hangText="S:">* 1 FETCH (UID 3 FLAGS (\Seen \Answered $Important) MODSEQ (90060115194045001))</t>
@@ -1538,9 +1538,9 @@ to handle EXPUNGE replies.
 <?rfc subcompact="yes"?>
 						<list style="hanging">
 							<t hangText="C:">B04 SELECT INBOX (QRESYNC (67890007<vspace/>
-							 90060115194045000 1:29997 (5000,7500,9000,9990:9999 15000,<vspace/>
-							 22500,27000,29970,29973,29976,29979,29982,29985,29988,29991,<vspace/>
-							 29994,29997)))</t>
+              &nbsp;90060115194045000 1:29997 (5000,7500,9000,9990:9999 15000,<vspace/>
+							22500,27000,29970,29973,29976,29979,29982,29985,29988,29991,<vspace/>
+							29994,29997)))</t>
 							<t hangText="S:">* 10003 EXISTS</t>
 							<t hangText="S:">* 4 RECENT</t>
 							<t hangText="S:">* OK [UIDVALIDITY 67890007] UIDVALIDITY</t>
@@ -1549,7 +1549,7 @@ to handle EXPUNGE replies.
 							<t hangText="S:">* OK [UNSEEN 7] There are some unseen messages in the mailbox</t>
 							<t hangText="S:">* FLAGS (\Answered \Flagged \Draft \Deleted \Seen)</t>
 							<t hangText="S:">* OK [PERMANENTFLAGS (\Answered \Flagged \Draft<vspace/>
-							\Deleted \Seen \*)] Permanent flags</t>
+              &nbsp;\Deleted \Seen \*)] Permanent flags</t>
               <t hangText="S:">* 1 FETCH (UID 3 FLAGS (\Seen \Answered $Important) MODSEQ (90060115194045001))</t>
               <t hangText="S:">...</t>
               <t hangText="S:">* 9889 FETCH (UID 29667 FLAGS (\Seen \Answered) MODSEQ (90060115194045027))</t>
