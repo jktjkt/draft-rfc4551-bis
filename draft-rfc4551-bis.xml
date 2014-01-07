@@ -89,6 +89,9 @@
 			part of the SELECT/EXAMINE command, without the need for additional server-side
 			state or client round-trips.
 			</t>
+
+      <t>This document obsoletes RFC 4551 and RFC 5162. It updates RFC 4315, RFC 3501 and RFC 2683.</t>
+
 		</abstract>
 	
 	</front>
@@ -2454,8 +2457,7 @@ S: A153 OK [HIGHESTMODSEQ 104] done
                           ;; extends non-terminal defined in [RFC4466].
                           ;; Value 0 denotes that the mailbox doesn't
                           ;; support persistent mod-sequences
-                          ;; as described in Section 3.1.1.2
-                          ;; [[RFC Editor: Please check the above reference]]
+                          ;; as described in Section 3.1.2.2
 
    store-modifier      =/ "UNCHANGEDSINCE" SP mod-sequence-valzer
                           ;; Only a single "UNCHANGEDSINCE" may be
@@ -2634,6 +2636,7 @@ S: A153 OK [HIGHESTMODSEQ 104] done
 		<references title="Normative References">
 
       &rfc2119; <!--Keywords-->
+      &rfc2683; <!--IMAP Implementations Recommendations-->
       &rfc3501; <!--IMAP4rev1-->
       &rfc5256; <!--IMAP SORT & THREAD-->
       &rfc5234; <!--ABNF-->
@@ -2657,7 +2660,6 @@ S: A153 OK [HIGHESTMODSEQ 104] done
 
 		<references title="Informative References">
 
-      &rfc2683; <!--IMAP Implementations Recommendations-->
       &rfc5257; <!--IMAP ANNOTATE-->
       &rfc4731; <!--IMAP ESEARCH-->
       &rfc5267; <!--IMAP CONTEXT & ESORT-->
