@@ -1238,6 +1238,15 @@ S: * 101 FETCH (MODSEQ (303011130956) FLAGS ($Processed \Deleted
         on the corresponding mailbox.
       </t>
 
+      <t>
+        Server implementing QRESYNC MUST send untagged events to client in a
+        way that client doesn't lose any changes in case of connectivity loss.
+        In particular this means that if server sends MODSEQ FETCH data items
+        while EXPUNGE (or VANISHED) replies with lower mod-sequences are being
+        delayed, the server MUST send HIGHESTMODSEQ response code with a lower
+        value than the EXPUNGE's mod-sequence. See example in <xref target="updated-sync-seq"/>.
+      </t>
+
 	    <section title='Impact to CONDSTORE-only clients'>
 		        <t>
             A client that supports CONDSTORE but not QRESYNC might resynchronize
@@ -2249,7 +2258,7 @@ S: A210 OK EXPUNGE completed
 			</section>
 		</section>
 
-		<section title="Updated Synchronization Sequence">
+		<section title="Updated Synchronization Sequence" anchor="updated-sync-seq">
 			<t>
 			This section updates the description of optimized synchronization
 			in Section 6.1 of the <xref target="IMAP-DISC"/>.
@@ -2769,6 +2778,10 @@ S: A153 OK [HIGHESTMODSEQ 104] done
 
       <t>
       Addressed erratum #1809: http://www.rfc-editor.org/errata_search.php?eid=1809
+      </t>
+
+      <t>
+      Addressed erratum #1810: http://www.rfc-editor.org/errata_search.php?eid=1810
       </t>
 
       <t>
