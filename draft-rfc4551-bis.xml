@@ -15,7 +15,7 @@
         <!ENTITY rfc5464 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.5464.xml'>
         <!ENTITY rfc6851 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.6851.xml'>
 ]>
-<rfc category="std" ipr="trust200902" docName="draft-ietf-qresync-rfc5162bis-06.txt"
+<rfc category="std" ipr="pre5378Trust200902" docName="draft-ietf-qresync-rfc5162bis-07.txt"
 	 obsoletes="4551, 5162" updates='4315, 3501, 2683'>
 	<?xml-stylesheet href="rfc5162_files/rfc2629.htm" type="text/xsl"?>
         <?rfc strict="yes" ?>
@@ -59,13 +59,14 @@
 				<email>dcridland@arcode.com</email>
 			</address>
 		</author>
-		<date year="2013"/>
-        <keyword>IMAP</keyword>
-        <keyword>CONDSTORE</keyword>
-        <keyword>QRESYNC</keyword>
-        <keyword>VANISHED</keyword>
-        <keyword>EXPUNGE</keyword>
-        <keyword>quick resynchronization</keyword>
+		<date year="2014"/>
+
+    <keyword>IMAP</keyword>
+    <keyword>CONDSTORE</keyword>
+    <keyword>QRESYNC</keyword>
+    <keyword>VANISHED</keyword>
+    <keyword>EXPUNGE</keyword>
+    <keyword>quick resynchronization</keyword>
 
 		<abstract>
 
@@ -457,7 +458,7 @@ S: * OK [UIDNEXT 4392] Predicted next UID
 S: * FLAGS (\Answered \Flagged \Deleted \Seen \Draft)
 S: * OK [PERMANENTFLAGS (\Deleted \Seen \*)] Limited
 S: * OK [NOMODSEQ] Sorry, this mailbox format doesn't support
-   modsequences
+    modsequences
 S: A142 OK [READ-WRITE] SELECT completed
                         </artwork>
                     </figure>
@@ -1204,7 +1205,8 @@ C: a106 STORE 100:150 (UNCHANGEDSINCE 212030000000)
 
       <figure>
         <artwork>
-S: * 101 FETCH (MODSEQ (303011130956) FLAGS ($Processed \Deleted \Answered))
+S: * 101 FETCH (MODSEQ (303011130956) FLAGS ($Processed \Deleted
+    \Answered))
         </artwork>
       </figure>
 
@@ -1442,14 +1444,16 @@ to handle EXPUNGE replies.
 <?rfc subcompact="yes"?>
 						<list style="hanging">
 							<t hangText="C:">A03 SELECT INBOX (QRESYNC (67890007<vspace/>
-							 90060115194045000 41:211,214:541))</t>
+							&nbsp;90060115194045000 41:211,214:541))</t>
 							<t hangText="S:">* OK [CLOSED]</t>
 							<t hangText="S:">* 100 EXISTS</t>
 							<t hangText="S:">* 11 RECENT</t>
 							<t hangText="S:">* OK [UIDVALIDITY 67890007] UIDVALIDITY</t>
 							<t hangText="S:">* OK [UIDNEXT 600] Predicted next UID</t>
-							<t hangText="S:">* OK [HIGHESTMODSEQ 90060115205545359] Highest mailbox mod-sequence</t>
-							<t hangText="S:">* OK [UNSEEN 7] There are some unseen messages in the mailbox</t>
+							<t hangText="S:">* OK [HIGHESTMODSEQ 90060115205545359] Highest<vspace/>
+              &nbsp;mailbox mod-sequence</t>
+							<t hangText="S:">* OK [UNSEEN 7] There are some unseen<vspace/>
+              &nbsp;messages in the mailbox</t>
 							<t hangText="S:">* FLAGS (\Answered \Flagged \Draft \Deleted \Seen)</t>
 							<t hangText="S:">* OK [PERMANENTFLAGS (\Answered \Flagged \Draft<vspace/>
 							\Deleted \Seen \*)] Permanent flags</t>
@@ -2447,7 +2451,8 @@ S: A153 OK [HIGHESTMODSEQ 104] done
 			case-insensitive fashion.
 			</t>
 
-<figure><artwork type='anbf'><![CDATA[
+<figure><artwork type='anbf'>
+                            <![CDATA[
    capability          =/ "CONDSTORE" / "QRESYNC"
 
    status-att          =/ "HIGHESTMODSEQ"
@@ -2504,9 +2509,9 @@ S: A153 OK [HIGHESTMODSEQ 104] done
                           ;;
                           ;; <entry-flag-name> follows the escape rules
                           ;; used by "quoted" string as described in
-                          ;; Section 4.3 of [RFC3501], e.g., for the flag
-                          ;; \Seen the corresponding <entry-name> is
-                          ;; "/flags/\\seen", and for the flag
+                          ;; Section 4.3 of [RFC3501], e.g., for the
+                          ;; flag \Seen the corresponding <entry-name>
+                          ;; is "/flags/\\seen", and for the flag
                           ;; $MDNSent, the corresponding <entry-name>
                           ;; is "/flags/$mdnsent".
 
