@@ -1607,8 +1607,8 @@ to handle EXPUNGE replies.
 				messages were updated when the messages were expunged
 				(as described above).
 				The expunged messages are reported using the
-				VANISHED response as described in <xref target="vanished-resp"/>,
-				which MUST contain the EARLIER tag. Any VANISHED (EARLIER) responses
+                VANISHED (EARLIER) response as described in <xref target="vanished-resp-earlier"/>.
+                Any VANISHED (EARLIER) responses
 				MUST be returned before any FETCH responses, as otherwise the client
 				might get confused about how message numbers map to UIDs.
 				</t>
@@ -1910,14 +1910,7 @@ Example:    C: . UID EXPUNGE 3000:3002
 
 			</section>
 
-			<section title="VANISHED Response" anchor="vanished-resp">
-				<t>
-					<list style="hanging" hangIndent="11">
-						<t hangText="Contents:">an optional EARLIER tag</t>
-						<t hangText="">list of UIDs</t>
-					</list>
-				</t>
-				
+            <section title="VANISHED Response" anchor="vanished-resp">
 				<t>
 				The VANISHED response reports that the specified UIDs have been
 				permanently removed from the mailbox. This response is similar to
@@ -1935,6 +1928,21 @@ Example:    C: . UID EXPUNGE 3000:3002
 				The VANISHED response has two forms. The first form contains
 				the EARLIER tag, which signifies that the response was caused by
 				a UID FETCH (VANISHED) or a SELECT/EXAMINE (QRESYNC) command.
+                The second form doesn't contain the EARLIER tag and is used for
+                announcing message removals within an already selected mailbox.
+				</t>
+
+			<section title="VANISHED (EARLIER) Response" anchor="vanished-resp-earlier">
+				<t>
+					<list style="hanging" hangIndent="11">
+						<t hangText="Contents:">an EARLIER tag</t>
+						<t hangText="">list of UIDs</t>
+					</list>
+				</t>
+
+				<t>
+                The VANISHED (EARLIER) response is caused by
+				a UID FETCH (VANISHED) or a SELECT/EXAMINE (QRESYNC) command.
 				This response is sent if the UID set parameter to the UID FETCH
 				(VANISHED) command includes UIDs of messages that are no
 				longer in the mailbox. When the client sees a VANISHED EARLIER
@@ -1943,7 +1951,23 @@ Example:    C: . UID EXPUNGE 3000:3002
 				</t>
 
 				<t>
-				The second form doesn't contain the EARLIER tag and is described below.
+				Because clients handle the VANISHED (EARLIER) and VANISHED responses
+				differently, servers MUST NOT report UIDs resulting from a
+				UID FETCH (VANISHED) or a SELECT/EXAMINE (QRESYNC) in the same VANISHED
+				response as UIDs of messages expunged now (i.e., messages expunged in
+                other connections). Instead, the server MUST send two separate responses:
+                one VANISHED (EARLIER) and one VANISHED without the EARLIER tag.
+				</t>
+            </section>
+
+			<section title="VANISHED Response without the (EARLIER) Tag" anchor="vanished-resp-noearlier">
+				<t>
+					<list style="hanging" hangIndent="11">
+						<t hangText="Contents:">list of UIDs</t>
+					</list>
+				</t>
+				
+                <t>
 				Once a client has issued "ENABLE QRESYNC" (and the server has positively
 				responded to that command with the untagged ENABLED response containing
 				QRESYNC), the server MUST use the VANISHED response without
@@ -1958,10 +1982,7 @@ Example:    C: . UID EXPUNGE 3000:3002
 				</t>
 
 				<t>
-        A VANISHED response sent because of an EXPUNGE or UID EXPUNGE
-        command or because messages were expunged
-        in other connections (i.e., the VANISHED response without the EARLIER
-        tag) also decrements the number of messages
+        Unlike the VANISHED (EARLIER), this response also decrements the number of messages
         in the mailbox; it is not necessary for the server to send an
         EXISTS response with the new value. It also
         decrements message sequence numbers for each successive message in
@@ -1969,9 +1990,7 @@ Example:    C: . UID EXPUNGE 3000:3002
 				</t>
 
 				<t>
-        Note that a VANISHED response without the EARLIER tag (i.e.
-        a VANISHED response caused by EXPUNGE, UID EXPUNGE, or messages
-        expunged in other connections) MUST only refer to a message
+        The VANISHED response without the EARLIER tag MUST only refer to a message
         which was visible to the client in the current session at the time
         the VANISHED response is sent.
         That is, servers MUST NOT send UIDs for previously expunged
@@ -1996,14 +2015,6 @@ But this advice is still a good one. Reword?
 				</t>
 -->
         
-				<t>
-				Because clients handle the two different forms of the VANISHED response
-				differently, servers MUST NOT report UIDs resulting from a
-				UID FETCH (VANISHED) or a SELECT/EXAMINE (QRESYNC) in the same VANISHED
-				response as UIDs of messages expunged now (i.e., messages expunged in
-				other connections). Instead, the server MUST send separate VANISHED
-				responses: one with the EARLIER tag and one without.
-				</t>
 
 				<t>
 				A VANISHED response MUST NOT be sent when no command is in
@@ -2090,6 +2101,7 @@ S: A210 OK EXPUNGE completed
 					</postamble>
 				</figure>
 			</section>
+        </section>
 
 			<section title="CLOSED Response Code" anchor="closed-resp-code">
 				<t>
