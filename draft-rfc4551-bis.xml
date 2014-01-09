@@ -15,8 +15,8 @@
         <!ENTITY rfc5464 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.5464.xml'>
         <!ENTITY rfc6851 PUBLIC '' 'http://xml.resource.org/public/rfc/bibxml/reference.RFC.6851.xml'>
 ]>
-<rfc category="std" ipr="pre5378Trust200902" docName="draft-ietf-qresync-rfc5162bis-08.txt"
-	 obsoletes="4551, 5162" updates='4315, 3501, 2683'>
+<rfc category="std" ipr="pre5378Trust200902" docName="draft-ietf-qresync-rfc5162bis-09.txt"
+	 obsoletes="4551, 5162" updates='2683'>
 	<?xml-stylesheet href="rfc5162_files/rfc2629.htm" type="text/xsl"?>
         <?rfc strict="yes" ?>
         <?rfc toc="yes" ?>
@@ -86,18 +86,15 @@
       </t>
 
       <!--QRESYNC--> 
-			<t>This document additionally updates another IMAP extension,
-			Quick Resynchronization, which builds on the Conditional Store extension to provide
-			an IMAP client the ability to fully resynchronize a mailbox as
-			part of the SELECT/EXAMINE command, without the need for additional server-side
-			state or client round-trips. Hence this memo obsoletes RFC 5162.
-			</t>
+	<t>This document additionally updates another IMAP extension,
+	Quick Resynchronization, which builds on the Conditional Store extension to provide
+	an IMAP client the ability to fully resynchronize a mailbox as
+	part of the SELECT/EXAMINE command, without the need for additional server-side
+	state or client round-trips. Hence this memo obsoletes RFC 5162.
+	</t>
 
       <t>
-      Finally, when these extensions are used, other mechanisms are
-      updated.  In particular, the line length recommendation in RFC 2863
-      is modified, the UID EXPUNGE command from RFC 4315 is modified, and
-      the behavior of STORE/UID STORE/FETCH/UID FETCH/EXPUNGE commands from RFC 3501 is modified.
+      Finally, this document also updates the line length recommendation in RFC 2683.
       </t>
 
     </abstract>
