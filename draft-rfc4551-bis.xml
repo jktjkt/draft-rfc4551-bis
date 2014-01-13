@@ -2093,6 +2093,24 @@ S: A210 OK EXPUNGE completed
 						expunged since the previous VANISHED response.
 					</postamble>
 				</figure>
+
+                <figure>
+                    <preamble>
+                        To illustrate the difference between the VANISHED and
+                        VANISHED (EARLIER), suppose the mailbox contains UIDs
+                        2 and 4. Any of the following responses would consitute
+                        a broken server implementation:
+                    </preamble>
+                    <artwork>
+S: * VANISHED 1
+S: * VANISHED 3
+S: * VANISHED 5
+                    </artwork>
+                    <postamble>
+                        However, any of these UIDs can easily be referenced by the
+                        VANISHED (EARLIER) response.
+                    </postamble>
+                </figure>
 			</section>
 
 			<section title="CLOSED Response Code" anchor="closed-resp-code">
